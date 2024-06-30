@@ -35,9 +35,12 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // Check for images: avatar and cover image.
-  const avatarLocalPath = req.files?.avatar[0]?.path; // In multer, if we take the first property then we get an object from which we can optionally get the path.
+  const avatarLocalPath = req.files?.avatar ? req.files.avatar[0]?.path : "";
+  // In multer, if we take the first property then we get an object from which we can optionally get the path.
 
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  const coverImageLocalPath = req.files?.coverImage
+    ? req.files.coverImage[0]?.path
+    : "";
 
   console.log(req.files ? req.files : "No files");
 
