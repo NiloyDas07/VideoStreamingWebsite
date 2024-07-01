@@ -50,6 +50,7 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+// Hash the password before saving it to the database. Hash it again if the password is modified.
 userSchema.pre("save", async function (next) {
   // Not using arrow function because they don't have access to 'this' or the context.
   const user = this;
@@ -59,10 +60,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Method to check if the password is correct.
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
+// Method to generate access token.
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
@@ -78,6 +81,7 @@ userSchema.methods.generateAccessToken = function () {
   );
 };
 
+// Method to generate refresh token.
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
