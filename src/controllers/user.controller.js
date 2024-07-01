@@ -1,4 +1,5 @@
 import validator from "email-validator";
+import jwt from "jsonwebtoken";
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -109,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Check if email and password are provided.
   if (!email || !password) {
-    throw new ApiError(400, "Emmail and password are required.");
+    throw new ApiError(400, "Email and password are required.");
   }
 
   // Check if user exists.
@@ -178,4 +179,68 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully."));
 });
 
-export { registerUser, loginUser, logoutUser };
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Get refresh token from cookies.
+  const incomingRefreshToken =
+    req.cookies?.refreshToken || req.body?.refreshToken;
+  if (!incomingRefreshToken) {
+    throw new ApiError(401, "Unauthorized Request.");
+  }
+
+  // Verify the refresh token.
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw new ApiError(401, "Refresh Token Expired.");
+    }
+    throw new ApiError(401, "Invalid Refresh Token.");
+  }
+  if (!decodedToken) {
+    throw new ApiError(401, "Unauthorized Request.");
+  }
+
+  // Get the user from the database.
+  const user = await User.findById(decodedToken._id).select(
+    "-password -refreshToken"
+  );
+  if (!user) {
+    throw new ApiError(401, "Invalid Refresh Token.");
+  }
+
+  // Check if refresh token is valid.
+  if (user.refreshToken !== incomingRefreshToken) {
+    throw new ApiError(401, "Refresh Token is expired or used.");
+  }
+
+  // Create access token and refresh token.
+  const { accessToken, refreshToken } =
+    await generateAccessAndRefreshTokens(user);
+
+  // Return the tokens in cookies.
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          accessToken,
+          refreshToken,
+        },
+        "Access token refreshed successfully."
+      )
+    );
+});
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken };
