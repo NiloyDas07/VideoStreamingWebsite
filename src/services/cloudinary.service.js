@@ -8,13 +8,28 @@ cloudinary.config({
 });
 
 // Upload a file
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async ({
+  localFilePath,
+  publicId = null,
+  folderPath = "VideoStreamingWebsite",
+}) => {
   try {
     if (!localFilePath) return null;
 
-    const response = await cloudinary.uploader.upload(localFilePath, {
+    const options = {
       resource_type: "auto",
-    });
+      overwrite: true,
+    };
+
+    if (publicId) {
+      options.public_id = publicId;
+    }
+
+    if (folderPath) {
+      options.asset_folder = folderPath;
+    }
+
+    const response = await cloudinary.uploader.upload(localFilePath, options);
 
     if (response) {
       console.dir(`Full response Cloudinary: ${response.prototype}`);
