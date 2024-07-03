@@ -41,3 +41,36 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     throw new ApiError(401, error.message || "Invalid Access Token.");
   }
 });
+
+
+// Optional middleware to verify the access token. Required for pages in which we want to check if the user is logged in, but will still allow them to access the page if they are not logged in.
+export const optionalVerifyJWT = asyncHandler(async (req, _, next) => {
+  try {
+    // Get the access token of the current user from the request.
+    const accessToken =
+      req.cookies?.accessToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
+
+    if (accessToken) {
+      // Verify the access token.
+      const decodedToken = jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      if (decodedToken) {
+        // Get the user from the database.
+        const user = await User.findById(decodedToken._id).select(
+          "-password -refreshToken"
+        );
+        if (user) {
+          // Add the user to the request object.
+          req.user = user;
+        }
+      }
+    }
+    next();
+  } catch (error) {
+    next(); // Proceed to next middleware without blocking the request
+  }
+});
+

@@ -19,6 +19,7 @@ const uploadOnCloudinary = async ({
     const options = {
       resource_type: "auto",
       overwrite: true,
+      invalidate: true,
     };
 
     if (publicId) {
@@ -32,9 +33,21 @@ const uploadOnCloudinary = async ({
     const response = await cloudinary.uploader.upload(localFilePath, options);
 
     if (response) {
-      console.dir(`Full response Cloudinary: ${response.prototype}`);
       fs.unlinkSync(localFilePath);
-      return response;
+
+      const { url } = response;
+      const urlParts = url.split("/");
+      const versionIndex = urlParts.findIndex(
+        (part) => part.startsWith("v") && !isNaN(part.slice(1))
+      );
+      
+      if (versionIndex !== -1) {
+        urlParts.splice(versionIndex, 1);
+      }
+
+      const staticUrl = urlParts.join("/");
+
+      return staticUrl;
     } else {
       console.log("File upload failed");
       return null;

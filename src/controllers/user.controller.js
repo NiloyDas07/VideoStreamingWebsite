@@ -79,19 +79,19 @@ const registerUser = asyncHandler(async (req, res) => {
   const publicIdCoverImage = `${username}coverImage`;
 
   // Upload images to cloudinary.
-  const avatar = await uploadOnCloudinary({
+  const avatarUrl = await uploadOnCloudinary({
     localFilePath: avatarLocalPath,
     publicId: publicIdAvatar,
     folderPath: AVATAR_FOLDER_PATH,
   });
-  const coverImage = await uploadOnCloudinary({
+  const coverImageUrl = await uploadOnCloudinary({
     localFilePath: coverImageLocalPath,
     publicId: publicIdCoverImage,
     folderPath: COVER_IMAGE_FOLDER_PATH,
   });
 
   // Check if avatar is uploaded successfully because we have set avatar as required.
-  if (!avatar) {
+  if (!avatarUrl) {
     throw new ApiError(500, "Failed to upload avatar.");
   }
 
@@ -101,8 +101,8 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     fullName,
-    avatar: avatar.url,
-    coverImage: coverImage?.url || "",
+    avatar: avatarUrl,
+    coverImage: coverImageUrl || "",
   });
 
   // Check if user is created successfully and return it without the password and refreshToken.
@@ -178,8 +178,8 @@ const loginUser = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   // Delete refresh token from database.
   await User.findByIdAndUpdate(req.user._id, {
-    $set: {
-      refreshToken: undefined,
+    $unset: {
+      refreshToken: 1,
     },
   });
 
@@ -223,15 +223,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   // Get the user from the database.
-  const user = await User.findById(decodedToken._id).select(
-    "-password -refreshToken"
-  );
+  const user = await User.findById(decodedToken._id).select("-password");
   if (!user) {
     throw new ApiError(401, "Invalid Refresh Token.");
   }
 
   // Check if refresh token is valid.
   if (user.refreshToken !== incomingRefreshToken) {
+    console.log(user, incomingRefreshToken);
     throw new ApiError(401, "Refresh Token is expired or used.");
   }
 
@@ -298,6 +297,10 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "User not logged in.");
   }
 
+  if (req.user.username !== req.params.username) {
+    throw new ApiError(401, "Unauthorized Request.");
+  }
+
   return res
     .status(200)
     .json(
@@ -320,7 +323,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   if (fullName) updateFields.fullName = fullName;
 
   let user;
-  if (updateFields) {
+  if (Object.keys(updateFields).length > 0) {
     user = await User.findByIdAndUpdate(
       req.user._id,
       {
@@ -350,30 +353,32 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   }
 
   // Upload the file to Cloudinary.
-  const avatar = await uploadOnCloudinary({
+  const avatarUrl = await uploadOnCloudinary({
     localFilePath: avatarLocalPath,
     publicId: `${req.user.username}avatar`,
     folderPath: AVATAR_FOLDER_PATH,
   });
 
-  if (!avatar.url) {
+  if (!avatarUrl) {
     throw new ApiError(500, "Failed to upload avatar.");
   }
 
   // Update the user's avatar in the database.
-  const user = await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $set: {
-        avatar: avatar.url,
-      },
-    },
-    { new: true }
-  ).select("-password -refreshToken");
+  // let user = req.user;
+  // user = await User.findByIdAndUpdate(
+  //   req.user._id,
+  //   {
+  //     $set: {
+  //       avatar: avatarUrl,
+  //     },
+  //   },
+  //   { new: true }
+  // ).select("-password -refreshToken");
+  // Not needed since cloudinary url will not change and we are extracting the static url.
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Avatar updated successfully."));
+    .json(new ApiResponse(200, req.user, "Avatar updated successfully."));
 });
 
 // update user cover image
@@ -390,29 +395,29 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   }
 
   // Upload the file to Cloudinary.
-  const coverImage = await uploadOnCloudinary({
+  const coverImageUrl = await uploadOnCloudinary({
     localFilePath: coverImageLocalPath,
     publicId: `${req.user.username}coverImage`,
     folderPath: COVER_IMAGE_FOLDER_PATH,
   });
-  if (!coverImage.url) {
+  if (!coverImageUrl) {
     throw new ApiError(500, "Failed to upload cover image.");
   }
 
   // Update the user's cover image in the database.
-  const user = await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $set: {
-        coverImage: coverImage.url,
-      },
-    },
-    { new: true }
-  ).select("-password -refreshToken");
+  // const user = await User.findByIdAndUpdate(
+  //   req.user._id,
+  //   {
+  //     $set: {
+  //       coverImage: coverImageUrl,
+  //     },
+  //   },
+  //   { new: true }
+  // ).select("-password -refreshToken");
 
   return res
     .status(200)
-    .json(new ApiResponse(200, user, "Cover image updated successfully."));
+    .json(new ApiResponse(200, req.user, "Cover image updated successfully."));
 });
 
 // Get User Channel Profile details
