@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const subscriptionSchema = new Schema({
   channel: {

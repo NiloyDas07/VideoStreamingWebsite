@@ -152,6 +152,10 @@ const loginUser = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
 
+  if (!loggedInUser) {
+    throw new ApiError(500, "Failed to login user.");
+  }
+
   const cookieOptions = {
     httpOnly: true,
     secure: true,
@@ -405,6 +409,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   }
 
   // Update the user's cover image in the database.
+  // Not needed since cloudinary url will not change and we are extracting the static url.
   // const user = await User.findByIdAndUpdate(
   //   req.user._id,
   //   {
