@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 
 import { Tweet } from "../models/tweet.model.js";
 import { User } from "../models/user.model.js";
@@ -114,13 +114,16 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
 // Update tweet.
 const updateTweet = asyncHandler(async (req, res) => {
+  // Get new content from request body.
   const { content } = req.body;
   if (!content?.trim()) {
     throw new ApiError(400, "Content is required.");
   }
 
+  // Get tweet passed by verifyTweetOwner middleware.
   const { tweet } = req;
 
+  // Update tweet.
   tweet.content = content;
   const updatedTweet = await tweet.save();
 
@@ -135,15 +138,9 @@ const updateTweet = asyncHandler(async (req, res) => {
 
 // Delete tweet.
 const deleteTweet = asyncHandler(async (req, res) => {
-  const { tweetId } = req.params;
-  if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "Invalid tweet id.");
-  }
+  const { tweet } = req;
 
-  const tweet = await Tweet.findByIdAndDelete(tweetId);
-  if (!tweet) {
-    throw new ApiError(404, "Tweet not found.");
-  }
+  await tweet.deleteOne();
 
   return res
     .status(200)
