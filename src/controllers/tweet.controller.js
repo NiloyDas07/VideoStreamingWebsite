@@ -69,32 +69,43 @@ const getUserTweets = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Failed to find user.");
   }
 
+  // Get page number and page size for pagination.
   const { pageNumber = 1, pageSize = 10 } = req.query;
-  const pageNumberInt = parseInt(pageNumber, 10);
-  const pageSizeInt = parseInt(pageSize, 10);
-  const skip = (pageNumberInt - 1) * pageSizeInt;
 
-  const userTweets = await Tweet.find({ owner: tweetOwner._id })
-    .sort({ createdAt: -1 })
-    .limit(pageSizeInt)
-    .skip(skip);
+  const userTweets = Tweet.aggregate([
+    {
+      $match: {
+        owner: tweetOwner._id,
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
 
-  if (!userTweets) {
-    throw new ApiError(500, "Failed to get user tweets.");
+  // Options for pagination.
+  const options = {
+    page: parseInt(pageNumber),
+    limit: parseInt(pageSize),
+  };
+
+  const response = await Tweet.aggregatePaginate(userTweets, options);
+
+  if (!response) {
+    throw new ApiError(500, "Failed to fetch tweets.");
   }
-
-  const totalTweets = await Tweet.countDocuments({ owner: tweetOwner._id });
-  const totalPages = Math.ceil(totalTweets / pageSizeInt);
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        userTweets,
-        totalPages,
-        currentPage: pageNumberInt,
-        hasPrevPage: pageNumberInt > 1,
-        hasNextPage: pageNumberInt < totalPages,
+        userTweets: response.docs,
+        totalPages: response.totalPages,
+        currentPage: response.page,
+        hasPrevPage: response.hasPrevPage,
+        hasNextPage: response.hasNextPage,
       },
       "Tweets fetched successfully."
     )
@@ -103,25 +114,23 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
 // Update tweet.
 const updateTweet = asyncHandler(async (req, res) => {
-  const { tweetId } = req.params;
-
-  if (!isValidObjectId(tweetId)) {
-    throw new ApiError(400, "Invalid tweet id.");
-  }
-
   const { content } = req.body;
   if (!content?.trim()) {
     throw new ApiError(400, "Content is required.");
   }
 
-  const tweet = await Tweet.findByIdAndUpdate(tweetId, { content });
-  if (!tweet) {
-    throw new ApiError(404, "Tweet not found.");
+  const { tweet } = req;
+
+  tweet.content = content;
+  const updatedTweet = await tweet.save();
+
+  if (!updatedTweet) {
+    throw new ApiError(500, "Failed to update tweet.");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, tweet, "Tweet updated successfully."));
+    .json(new ApiResponse(200, updatedTweet, "Tweet updated successfully."));
 });
 
 // Delete tweet.
