@@ -106,6 +106,8 @@ const getUserTweets = asyncHandler(async (req, res) => {
         currentPage: response.page,
         hasPrevPage: response.hasPrevPage,
         hasNextPage: response.hasNextPage,
+        prevPage: response.prevPage,
+        nextPage: response.nextPage,
       },
       "Tweets fetched successfully."
     )
