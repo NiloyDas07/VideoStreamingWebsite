@@ -69,8 +69,6 @@ const registerUser = asyncHandler(async (req, res) => {
     ? req.files.coverImage[0]?.path
     : "";
 
-  console.log(req.files ? req.files : "No files");
-
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required.");
   }
@@ -101,8 +99,8 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     fullName,
-    avatar: avatarUrl,
-    coverImage: coverImageUrl || "",
+    avatar: avatarUrl.staticUrl,
+    coverImage: coverImageUrl.staticUrl || "",
   });
 
   // Check if user is created successfully and return it without the password and refreshToken.

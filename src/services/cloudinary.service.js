@@ -40,14 +40,14 @@ const uploadOnCloudinary = async ({
       const versionIndex = urlParts.findIndex(
         (part) => part.startsWith("v") && !isNaN(part.slice(1))
       );
-      
+
       if (versionIndex !== -1) {
         urlParts.splice(versionIndex, 1);
       }
 
       const staticUrl = urlParts.join("/");
 
-      return staticUrl;
+      return { response, staticUrl };
     } else {
       console.log("File upload failed");
       return null;
@@ -57,5 +57,29 @@ const uploadOnCloudinary = async ({
     return null;
   }
 };
+
+// Delete a file by URL
+const deleteFromCloudinary = async (url) => {
+  try {
+    // Extract the public_id from the URL
+    const urlParts = url.split("/");
+    publicIdWithExtension = urlParts.slice(uploadIndex + 1).join("/"); // e.g., 'folder_path/file_name.jpg'
+    const publicId = publicIdWithExtension.replace(/\.[^/.]+$/, ""); // e.g., 'v1623321084/sample'
+
+    // Delete the file from Cloudinary
+    const response = await cloudinary.uploader.destroy(publicId);
+
+    if (!response || response.result !== "ok") {
+      throw new Error("Failed to delete file from Cloudinary");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error deleting from Cloudinary:", error);
+    throw new Error("Failed to delete file from Cloudinary");
+  }
+};
+
+export { uploadOnCloudinary, deleteFromCloudinary };
 
 export { uploadOnCloudinary };

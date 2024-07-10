@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 import { Subscription } from "../models/subscription.model.js";
 
@@ -64,9 +63,9 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
-  const { pageNumber = 1, pageSize = 10, sort = 1 } = req.query;
+  const { pageNumber = 1, pageSize = 10, sort = "desc" } = req.query;
 
-  const sortOrder = parseInt(sort) === -1 ? -1 : 1;
+  const sortOrder = (sort = "desc" ? -1 : 1);
 
   const options = {
     page: parseInt(pageNumber),
@@ -128,9 +127,9 @@ const getUserChannelSubscribers = asyncHandler(async (req, res) => {
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
-  const { pageNumber = 1, pageSize = 10, sort = 1 } = req.query;
+  const { pageNumber = 1, pageSize = 10, sort = "desc" } = req.query;
 
-  const sortOrder = parseInt(sort) === -1 ? -1 : 1;
+  const sortOrder = (sort = "desc" ? -1 : 1);
 
   const options = {
     page: parseInt(pageNumber),
