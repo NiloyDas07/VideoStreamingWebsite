@@ -33,21 +33,8 @@ const uploadOnCloudinary = async ({
     const response = await cloudinary.uploader.upload(localFilePath, options);
 
     if (response) {
-      fs.unlinkSync(localFilePath);
-
-      const { url } = response;
-      const urlParts = url.split("/");
-      const versionIndex = urlParts.findIndex(
-        (part) => part.startsWith("v") && !isNaN(part.slice(1))
-      );
-
-      if (versionIndex !== -1) {
-        urlParts.splice(versionIndex, 1);
-      }
-
-      const staticUrl = urlParts.join("/");
-
-      return { response, staticUrl };
+      fs.unlinkSync(localFilePath); // Remove the locally saved temp file.
+      return response;
     } else {
       console.log("File upload failed");
       return null;

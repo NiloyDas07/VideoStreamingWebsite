@@ -43,4 +43,9 @@ app.use("/api/v1/likes", likeRouter);
 app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 
+// error handler
+import { errorHandler } from "./middlewares/errorhandler.middleware.js";
+
+app.use(errorHandler);
+
 export { app };

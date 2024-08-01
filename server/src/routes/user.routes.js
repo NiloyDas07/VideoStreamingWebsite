@@ -46,7 +46,7 @@ router
 
 // Secured routes.
 router.route("/change-password").post(verifyJWT, changeUserPassword);
-router.route("/user/:username").get(verifyJWT, getCurrentUser);
+router.route("/user/current").get(verifyJWT, getCurrentUser);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 router
   .route("/change-avatar")

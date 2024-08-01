@@ -1,6 +1,5 @@
 import validator from "email-validator";
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -99,8 +98,17 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     fullName,
-    avatar: avatarUrl.staticUrl,
-    coverImage: coverImageUrl.staticUrl || "",
+    avatar: {
+      url: avatarUrl.url,
+      publicId: avatarUrl.public_id,
+    },
+    coverImage: {
+      url: coverImageUrl.url,
+      publicId: coverImageUrl.public_id,
+    } || {
+      url: null,
+      publicId: null,
+    },
   });
 
   // Check if user is created successfully and return it without the password and refreshToken.
@@ -299,13 +307,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "User not logged in.");
   }
 
-  if (req.user.username !== req.params.username.toLowerCase()) {
-    throw new ApiError(
-      401,
-      "Unauthorized Request :: getCurrentUser, user.controller"
-    );
-  }
-
   return res
     .status(200)
     .json(
@@ -377,21 +378,22 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   }
 
   // Update the user's avatar in the database.
-  // let user = req.user;
-  // user = await User.findByIdAndUpdate(
-  //   req.user._id,
-  //   {
-  //     $set: {
-  //       avatar: avatarUrl,
-  //     },
-  //   },
-  //   { new: true }
-  // ).select("-password -refreshToken");
-  // Not needed since cloudinary url will not change and we are extracting the static url.
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        avatar: {
+          url: avatarUrl.url,
+          publicId: avatarUrl.public_id,
+        },
+      },
+    },
+    { new: true }
+  ).select("-password -refreshToken");
 
   return res
     .status(200)
-    .json(new ApiResponse(200, req.user, "Avatar updated successfully."));
+    .json(new ApiResponse(200, user, "Avatar updated successfully."));
 });
 
 // update user cover image
@@ -418,20 +420,22 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   }
 
   // Update the user's cover image in the database.
-  // Not needed since cloudinary url will not change and we are extracting the static url.
-  // const user = await User.findByIdAndUpdate(
-  //   req.user._id,
-  //   {
-  //     $set: {
-  //       coverImage: coverImageUrl,
-  //     },
-  //   },
-  //   { new: true }
-  // ).select("-password -refreshToken");
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        coverImage: {
+          url: coverImageUrl.url,
+          publicId: coverImageUrl.public_id,
+        },
+      },
+    },
+    { new: true }
+  ).select("-password -refreshToken");
 
   return res
     .status(200)
-    .json(new ApiResponse(200, req.user, "Cover image updated successfully."));
+    .json(new ApiResponse(200, user, "Cover image updated successfully."));
 });
 
 // Get User Channel Profile details

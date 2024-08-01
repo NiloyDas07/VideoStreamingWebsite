@@ -10,6 +10,7 @@ import {
   getVideoById,
   getAllVideos,
   togglePublishStatus,
+  incrementVideoViews,
 } from "../controllers/video.controller.js";
 
 const router = Router();
@@ -37,6 +38,8 @@ router
   .get(getVideoById)
   .delete(verifyJWT, deleteVideo)
   .patch(verifyJWT, upload.single("thumbnail"), updateVideo);
+
+router.route("/increment-views/:videoId").patch(incrementVideoViews);
 
 router.route("/toggle/publish/:videoId").patch(verifyJWT, togglePublishStatus);
 

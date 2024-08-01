@@ -152,15 +152,15 @@ const publishAVideo = asyncHandler(async (req, res) => {
     title,
     description,
     thumbnail: {
-      url: thumbnailUrl.staticUrl,
-      publicId: thumbnailUrl.response.public_id,
+      url: thumbnailUrl.url,
+      publicId: thumbnailUrl.public_id,
     },
     videoFile: {
-      url: videoUrl.staticUrl,
-      publicId: videoUrl.response.public_id,
+      url: videoUrl.url,
+      publicId: videoUrl.public_id,
     },
     owner: req.user._id,
-    duration: videoUrl.response.duration,
+    duration: videoUrl.duration,
   });
 
   if (!video) {
@@ -237,6 +237,33 @@ const getVideoById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "Video fetched successfully."));
 });
 
+// Increment video views.
+const incrementVideoViews = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid videoId");
+  }
+
+  const videoMongoId = mongoose.Types.ObjectId.createFromHexString(videoId);
+
+  const video = await Video.findOneAndUpdate(
+    { _id: videoMongoId },
+    { $inc: { views: 1 } },
+    {
+      new: true,
+      fields: "views",
+    }
+  );
+
+  if (!video) {
+    throw new ApiError(404, "Video not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video views incremented successfully."));
+});
+
 // Update a video details.
 const updateVideo = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
@@ -248,14 +275,9 @@ const updateVideo = asyncHandler(async (req, res) => {
 
   const { title = "", description = "" } = req.body;
   const thumbnailLocalPath = req.file?.path || "";
-  const { incrementViews = "" } = req.query;
 
   // Atleast one field is required.
-  if (
-    ![title, description, thumbnailLocalPath, incrementViews].some((field) =>
-      field.trim()
-    )
-  ) {
+  if (![title, description, thumbnailLocalPath].some((field) => field.trim())) {
     throw new ApiError(400, "Update values not provided.");
   }
 
@@ -282,19 +304,14 @@ const updateVideo = asyncHandler(async (req, res) => {
     if (!uploadedThumbnail) {
       throw new ApiError(500, "Thumbnail upload failed.");
     }
+
+    updateOptions.thumbnail = {
+      url: uploadedThumbnail.url,
+      publicId: uploadedThumbnail.public_id,
+    };
   }
 
-  // Increment views if requested.
-  if (incrementViews === "true") updateOptions.$inc = { views: 1 };
-
-  // If there are no update options then it means that we only replaced the thumbnail.
-  if (updateOptions.length === 0) {
-    return res
-      .status(200)
-      .json(new ApiResponse(200, video, "Thumbnail updated successfully."));
-  }
-
-  // Fetch video from database if it exists.
+  // Fetch video from database if it exists and update it.
   const updatedVideo = await Video.findOneAndUpdate(
     {
       _id: videoMongoId,
@@ -342,7 +359,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
   const deleteThumbnailResponse = await deleteFromCloudinary({
     publicId: video?.thumbnail?.publicId,
   });
-  if (!deleteThumbnailResponse ) {
+  if (!deleteThumbnailResponse) {
     throw new ApiError(500, "Video deletion from cloudinary failed.");
   }
 
@@ -393,4 +410,5 @@ export {
   updateVideo,
   deleteVideo,
   togglePublishStatus,
+  incrementVideoViews,
 };
