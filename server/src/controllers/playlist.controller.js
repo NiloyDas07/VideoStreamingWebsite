@@ -34,7 +34,19 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  //TODO: get user playlists
+
+  if (!isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid user id");
+  }
+
+  const playlists = await Playlist.find({ owner: userId });
+  if (!playlists) {
+    throw new ApiError(404, "Playlists not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, playlists, "Playlists found successfully"));
 });
 
 // Get playlist by id.
@@ -44,17 +56,59 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid playlist id");
   }
 
-  const playlist = await Playlist.findOne({
-    _id: mongoose.Types.ObjectId.createFromHexString(playlistId),
-    owner: req.user._id,
-  });
+  const playlistRes = await Playlist.aggregate([
+    {
+      $match: {
+        _id: mongoose.Types.ObjectId.createFromHexString(playlistId),
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "videos",
+        foreignField: "_id",
+        as: "videos",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+            },
+          },
+          {
+            $unwind: "$owner",
+          },
+          {
+            $project: {
+              title: 1,
+              description: 1,
+              thumbnail: 1, //cloudinary url
+              duration: 1,
+              views: 1,
+              createdAt: 1,
+              isPublished: 1,
+              owner: {
+                _id: 1,
+                username: 1,
+                avatar: 1, //cloudinary url
+              },
+            },
+          },
+        ],
+      },
+    },
+  ]);
 
-  if (!playlist) {
+  if (!playlistRes) {
     throw new ApiError(
       404,
       "Playlist not found or User is not authorized :: getPlaylistById, playlist.controller"
     );
   }
+
+  const playlist = playlistRes.length === 0 ? playlistRes : playlistRes[0];
 
   return res.status(200).json(new ApiResponse(200, playlist, "Playlist found"));
 });

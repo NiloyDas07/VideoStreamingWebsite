@@ -4,7 +4,8 @@ import Logo from "../components/Logo";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../actions/authActions"; // Adjust the path as necessary
+import { login, logout } from "../actions/authActions"; // Adjust the path as necessary
+import { setError, setUser } from "../features/authSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -24,20 +25,14 @@ const Login = () => {
   );
 
   if (error && error.statusCode !== 401) {
+    dispatch(logout());
+
     return (
       <Container className="py-4 text-red-600">
-        Error: {error.message}
+        Error: {JSON.stringify(error)}
       </Container>
     );
   }
-
-  // Automatically redirect to home page if user is logged in
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(-1);
-    }
-  }, [isAuthenticated, navigate]);
 
   return (
     <Container className="py-10">

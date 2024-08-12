@@ -6,12 +6,13 @@ import {
   toggleSubscription,
   getSubscribedChannels,
   getUserChannelSubscribers,
+  isSubscribed,
 } from "../controllers/subscription.controller.js";
 
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.route("/channel/:channelId").post(toggleSubscription);
+router.route("/channel/:channelId").get(isSubscribed).post(toggleSubscription);
 
 router.route("/user/subscribers/").get(getUserChannelSubscribers); // Only for channel owner (logged in user).
 

@@ -6,6 +6,37 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
+// Controller to check if user is subscribed.
+const isSubscribed = asyncHandler(async (req, res) => {
+  let channelId;
+  try {
+    channelId = mongoose.Types.ObjectId.createFromHexString(
+      req.params?.channelId?.trim()
+    );
+  } catch (error) {
+    throw new ApiError(400, "Invalid channel id");
+  }
+
+  const { _id } = req.user;
+
+  const subscription = await Subscription.findOne({
+    channel: channelId,
+    subscriber: _id,
+  });
+
+  if (subscription) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, true, "User is subscribed to this channel."));
+  } else {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, false, "User is not subscribed to this channel.")
+      );
+  }
+});
+
 // Controller to toggle subscription.
 const toggleSubscription = asyncHandler(async (req, res) => {
   let channelId;
@@ -38,7 +69,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, {}, "Subscription deleted successfully."));
+      .json(new ApiResponse(200, false, "Subscription deleted successfully."));
   } else {
     const newSubscription = await Subscription.create({
       channel: channelId,
@@ -195,4 +226,9 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
   );
 });
 
-export { toggleSubscription, getUserChannelSubscribers, getSubscribedChannels };
+export {
+  toggleSubscription,
+  getUserChannelSubscribers,
+  getSubscribedChannels,
+  isSubscribed,
+};

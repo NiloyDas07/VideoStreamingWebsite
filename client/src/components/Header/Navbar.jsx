@@ -23,7 +23,7 @@ const Navbar = () => {
   ];
 
   return (
-    <div className="fixed h-[55px] w-full bg-slate-500 py-2">
+    <div className="fixed z-50 h-[55px] w-full bg-slate-500 py-2">
       <Container className="flex items-center justify-between">
         <Logo />
         <ul className="flex gap-5">

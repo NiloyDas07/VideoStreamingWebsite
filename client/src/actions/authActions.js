@@ -12,7 +12,8 @@ export const login = createAsyncThunk(
       });
 
       if (res.success === false) return rejectWithValue(res.data);
-      return res.data;
+      console.log(res);
+      return res.data?.data?.user;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -35,7 +36,7 @@ export const getCurrentUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get("/users/user/current");
-      return res.data;
+      return res.data?.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }

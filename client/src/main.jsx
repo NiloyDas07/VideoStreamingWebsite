@@ -12,6 +12,8 @@ import Video from "./pages/Video.jsx";
 import AddVideo from "./pages/AddVideo.jsx";
 import Login from "./pages/Login.jsx";
 import AuthLayout from "./components/AuthLayout.jsx";
+import Playlists from "./pages/Playlists.jsx";
+import Playlist from "./pages/Playlist.jsx";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +41,22 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false}>
             <Login />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "playlists",
+        element: (
+          <AuthLayout>
+            <Playlists />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "playlist/:id",
+        element: (
+          <AuthLayout>
+            <Playlist />
           </AuthLayout>
         ),
       },

@@ -9,6 +9,48 @@ import { Video } from "../models/video.model.js";
 import { Comment } from "../models/comment.model.js";
 import { Tweet } from "../models/tweet.model.js";
 
+// Check if the like already exists.
+const isLiked = asyncHandler(async (req, res) => {
+  const { contentId } = req.params;
+  const { contentType } = req.query;
+
+  if (!isValidObjectId(contentId)) {
+    throw new ApiError(400, "Invalid content id.");
+  }
+
+  if (!["video", "comment", "tweet"].includes(contentType)) {
+    throw new ApiError(400, "Invalid content type.");
+  }
+
+  const query = { likedBy: req.user._id };
+  query[contentType] = contentId;
+
+  try {
+    const likedContent = await Like.findOne(query, { _id: 1 });
+
+    if (likedContent === null) {
+      return res
+        .status(200)
+        .json(new ApiResponse(200, false, "Content is not liked by the user."));
+    }
+
+    if (!likedContent) {
+      return res
+        .status(200)
+        .json(new ApiResponse(404, null, "Like not found."));
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, likedContent, "Content is liked by the user.")
+      );
+  } catch (error) {
+    throw new ApiError(500, "An error occurred while checking liked content.");
+  }
+});
+
+// Toggle Video like by logged in user.
 const toggleVideoLike = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
   if (!isValidObjectId(videoId)) {
@@ -60,6 +102,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
   }
 });
 
+// Toggle Comment like by logged in user.
 const toggleCommentLike = asyncHandler(async (req, res) => {
   const { commentId } = req.params;
   if (!isValidObjectId(commentId)) {
@@ -111,6 +154,7 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
   }
 });
 
+// Toggle Tweet like by logged in user.
 const toggleTweetLike = asyncHandler(async (req, res) => {
   const { tweetId } = req.params;
   if (!isValidObjectId(tweetId)) {
@@ -162,6 +206,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
   }
 });
 
+// Get liked videos by logged in user.
 const getLikedVideos = asyncHandler(async (req, res) => {
   const { _id } = req.user;
 
@@ -227,4 +272,35 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, likes, "Fetched all liked videos."));
 });
 
-export { toggleCommentLike, toggleTweetLike, toggleVideoLike, getLikedVideos };
+// Get the liked count of a content.
+const countLikes = asyncHandler(async (req, res) => {
+  const { contentId } = req.params;
+  const { contentType } = req.query;
+
+  if (!isValidObjectId(contentId)) {
+    throw new ApiError(400, "Invalid content id.");
+  }
+
+  if (!["video", "comment", "tweet"].includes(contentType)) {
+    throw new ApiError(400, "Invalid content type.");
+  }
+
+  try {
+    const count = await Like.countDocuments({
+      [`${contentType}`]: contentId,
+    });
+
+    return res.status(200).json(new ApiResponse(200, count, "Counted likes."));
+  } catch (error) {
+    throw new ApiError(500, "An error occurred while counting likes.");
+  }
+});
+
+export {
+  toggleCommentLike,
+  toggleTweetLike,
+  toggleVideoLike,
+  getLikedVideos,
+  isLiked,
+  countLikes,
+};

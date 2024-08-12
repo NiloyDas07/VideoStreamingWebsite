@@ -92,11 +92,17 @@ const addComment = asyncHandler(async (req, res) => {
   }
 
   try {
-    const comment = await Comment.create({
+    const createdComment = await Comment.create({
       content,
       owner: req.user._id,
       video: videoId,
     });
+
+    // Get the username and avatar of the user who created the comment
+    const comment = await Comment.findById(createdComment._id).populate(
+      "owner",
+      "username avatar"
+    );
 
     return res
       .status(201)
@@ -110,7 +116,7 @@ const addComment = asyncHandler(async (req, res) => {
     } else {
       throw new ApiError(
         500,
-        "Something went wrong while creating the comment"
+        `Something went wrong while creating the comment: ${error.message}`
       );
     }
   }

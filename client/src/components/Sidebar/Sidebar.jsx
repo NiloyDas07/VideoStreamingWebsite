@@ -34,10 +34,10 @@ const Sidebar = () => {
 
         <SidebarItem
           onClick={() => {
-            navigate("/playlist");
+            navigate("/playlists");
           }}
         >
-          Playlist
+          Playlists
         </SidebarItem>
       </div>
     </>

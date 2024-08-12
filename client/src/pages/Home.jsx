@@ -12,10 +12,21 @@ const Home = () => {
   );
 
   useEffect(() => {
-    dispatch(getAllVideos({ query: searchQuery }));
+    const fetchVideos = async () => {
+      try {
+        await dispatch(getAllVideos({ query: searchQuery }));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchVideos();
   }, [dispatch, searchQuery]);
 
-  if (!videos || !videos.data || videos.data.videos.length === 0) {
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!videos || videos.length === 0 || videos.videos.length === 0) {
     return (
       <div>
         <SearchBox />
@@ -24,7 +35,7 @@ const Home = () => {
     );
   }
 
-  const videoList = videos.data.videos;
+  const videoList = videos.videos;
 
   return (
     <div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Link } from "react-router-dom";
+import ChannelDetails from "./ChannelDetails";
 
 const formatDuration = (duration) => {
   const minutes = Math.floor(duration / 60);
@@ -23,17 +24,19 @@ const VideoCard = ({ video }) => {
           </span>
         </div>
       </Link>
-      <div className="flex gap-2">
+
+      {/* Video Details*/}
+      <div className="flex gap-2 truncate">
         <img
           src={video.owner.avatar.url}
           alt="video owner"
           className="h-8 w-8 rounded-full"
         />
-        <div className="overflow-hidden">
+        <div className="truncate">
           <h2 className="truncate text-base">{video.title}</h2>
           <div>
-            <h3>{video.owner.username}</h3>
-            <p>
+            <h3 className="truncate">{video.owner.username}</h3>
+            <p className="truncate">
               {video.views} views •{" "}
               {formatDistanceToNow(new Date(video.createdAt), {
                 addSuffix: true,

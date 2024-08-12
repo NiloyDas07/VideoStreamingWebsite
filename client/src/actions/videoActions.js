@@ -8,7 +8,8 @@ export const getAllVideos = createAsyncThunk(
       const response = await axiosInstance.get("/videos/", {
         params: { query },
       });
-      return response.data;
+      console.log(response.data.data);
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -35,31 +36,20 @@ export const getVideoById = createAsyncThunk(
       const response = await axiosInstance.get(`/videos/${videoId}`);
       const videoData = response.data;
 
-      console.log("Fetched video data:", videoData.data);
-      console.log("Fetched video data views:", videoData.data.views);
-
       if (videoData) {
         try {
           // Update video views
           const viewRes = await axiosInstance.patch(
             `/videos/increment-views/${videoId}`,
           );
-          console.log("ViewRes: ", viewRes.data.data.views);
-          console.log("A: ", videoData.data);
           // Assign the updated views to videoData
           videoData.data.views = viewRes.data.data.views;
-          console.log("B: ", videoData.data);
         } catch (error) {
           console.log("Error updating views:", error);
         }
       }
 
-      console.log(
-        "Fetched video data after views update:",
-        videoData.data.views,
-      );
-
-      return videoData;
+      return videoData?.data;
     } catch (error) {
       console.log("Error fetching video:", error);
       return rejectWithValue(error.response.data);
