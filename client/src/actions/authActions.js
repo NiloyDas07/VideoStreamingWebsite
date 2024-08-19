@@ -42,3 +42,17 @@ export const getCurrentUser = createAsyncThunk(
     }
   },
 );
+
+// Async thunk for creating an account
+export const createAccount = createAsyncThunk(
+  "auth/createAccount",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.post("/users/register", data);
+      if (res.success === false) return rejectWithValue(res.data);
+      return res?.data?.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  },
+);

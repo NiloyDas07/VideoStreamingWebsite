@@ -1,10 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import NavItem from "./NavItem.jsx";
-import Logo from "../Logo.jsx";
-import Container from "../Container.jsx";
-import Logout from "./Logout.jsx";
+import { DarkModeToggle, IconMenu, Logo, Logout, NavItem, Container } from "../";
 
 const Navbar = () => {
   const authStatus = useSelector((state) => state.auth.isAuthenticated);
@@ -23,9 +20,12 @@ const Navbar = () => {
   ];
 
   return (
-    <div className="fixed z-50 h-[55px] w-full bg-slate-500 py-2">
+    <nav className="fixed z-50 h-[55px] w-full border border-neutral-1 bg-primary bg-opacity-90 py-2 text-white backdrop-blur-[2px]">
       <Container className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+        <IconMenu />
         <Logo />
+        </div>
         <ul className="flex gap-5">
           {navItems.map(
             (item) =>
@@ -39,8 +39,9 @@ const Navbar = () => {
             </NavItem>
           )}
         </ul>
+        <DarkModeToggle />
       </Container>
-    </div>
+    </nav>
   );
 };
 

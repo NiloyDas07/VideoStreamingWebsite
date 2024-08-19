@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authSlice from "../features/authSlice";
-import videoSlice from "../features/videoSlice";
-import multipleVideoSlice from "../features/multipleVideoSlice";
-import commentSlice from "../features/commentSlice";
-import playListSlice from "../features/playListSlice";
+
+import {
+  authSlice,
+  videoSlice,
+  multipleVideoSlice,
+  commentSlice,
+  playListSlice,
+  UiSlice,
+} from "../features/";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +16,7 @@ const store = configureStore({
     video: videoSlice,
     comments: commentSlice,
     playlists: playListSlice,
+    ui: UiSlice,
   },
 });
 

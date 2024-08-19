@@ -6,6 +6,7 @@ import Container from "../components/Container";
 import { addNewVideo } from "../actions/videoActions";
 import { resetVideo } from "../features/videoSlice";
 import { useNavigate } from "react-router-dom";
+import { Button, Input } from "../components";
 
 const AddVideo = () => {
   const dispatch = useDispatch();
@@ -47,61 +48,57 @@ const AddVideo = () => {
   ) : (
     <Container className="py-4">
       <div className="flex h-full flex-col items-center justify-center">
-        <h1 className="mb-4 text-3xl font-bold">Add New Video</h1>
-        <div className="rounded-lg bg-white p-8 shadow-md">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <label className="flex flex-col gap-1">
-              <div>
-                Title <span className="text-red-500">*</span>
-              </div>
-              <input
-                ref={titleRef}
-                type="text"
-                required
-                className="rounded-md border border-gray-300 px-4 py-2"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <div>
-                Description <span className="text-red-500">*</span>
-              </div>
-              <textarea
-                ref={descriptionRef}
-                rows={4}
-                required
-                className="rounded-md border border-gray-300 px-4 py-2"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <div>
-                Video File <span className="text-red-500">*</span>
-              </div>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="video/mp4"
-                required
-                className="rounded-md border border-gray-300 px-4 py-2"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <div>
-                Thumbnail <span className="text-red-500">*</span>
-              </div>
-              <input
-                ref={thumbnailRef}
-                type="file"
-                accept="image/png, image/jpeg"
-                required
-                className="rounded-md border border-gray-300 px-4 py-2"
-              />
-            </label>
-            <button
-              type="submit"
-              className="rounded-md bg-blue-500 px-4 py-2 text-white"
-            >
+        <h1 className="text-3xl font-bold mb-6">Add New Video</h1>
+        <div className="rounded-lg bg-white p-8 shadow-md dark:bg-secondary-2">
+          <form onSubmit={handleSubmit} className=" flex flex-col gap-4">
+            {/* Title */}
+            <Input
+              label="Title"
+              type="text"
+              name="title"
+              id="title"
+              placeholder="Title"
+              required
+              ref={titleRef}
+            />
+
+            {/* Description */}
+            <Input
+              label="Description"
+              type="textarea"
+              name="description"
+              id="description"
+              rows={4}
+              placeholder="Description"
+              required
+              ref={descriptionRef}
+            />
+
+            {/* Video File */}
+            <Input
+              label="Video File"
+              type="file"
+              accept="video/mp4"
+              name="videoFile"
+              id="videoFile"
+              required
+              ref={fileRef}
+            />
+
+            {/* Thumbnail */}
+            <Input
+              label="Thumbnail"
+              type="file"
+              accept="image/png, image/jpeg, image/jpg, image/webp"
+              name="thumbnail"
+              id="thumbnail"
+              required
+              ref={thumbnailRef}
+            />
+
+            <Button type="submit" className="w-full bg-accent-2">
               Add Video
-            </button>
+            </Button>
           </form>
         </div>
       </div>

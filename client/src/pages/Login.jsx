@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from "react";
-import Container from "../components/Container";
-import Logo from "../components/Logo";
-import { Link, useNavigate } from "react-router-dom";
-import Button from "../components/Button";
+import React, { useRef } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "../actions/authActions"; // Adjust the path as necessary
-import { setError, setUser } from "../features/authSlice";
+
+import { Container, Logo, Button, Input } from "../components/";
+
+import { login, logout } from "../actions/authActions";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -40,7 +39,7 @@ const Login = () => {
 
       <div className="flex w-full items-center justify-center">
         <div
-          className={`mx-auto w-full max-w-lg rounded-xl border border-black/10 bg-gray-100 p-10`}
+          className={`mx-auto w-full max-w-lg rounded-xl bg-neutral-3 p-10 text-opacity-80 ring-1 ring-black/10 dark:bg-secondary-2 dark:text-secondary-1`}
         >
           <div className="mb-2 flex justify-center">
             <span className="inline-block w-full max-w-[100px]">
@@ -52,44 +51,40 @@ const Login = () => {
             Sign in to your account
           </h2>
 
-          <p className="mt-2 text-center text-base text-black/60">
+          <p className="mt-2 text-center text-base text-black/60 dark:text-secondary-1 dark:text-opacity-60">
             Don&apos;t have an account?&nbsp;
             <Link
               to="/signup"
-              className="text-primary font-medium transition-all duration-200 hover:underline"
+              className="font-medium transition-all duration-200 hover:underline dark:text-secondary-1 dark:text-opacity-80"
             >
               Sign Up
             </Link>
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" />
-              <input
-                type="email"
-                name="email"
-                id="email"
-                className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm"
-                placeholder="Email"
-                required
-                ref={emailRef}
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-3">
+            <Input
+              label="Email"
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+              required
+              ref={emailRef}
+              requiredStars={false}
+            />
 
-            <div className="space-y-2">
-              <label htmlFor="password" />
-              <input
-                type="password"
-                name="password"
-                id="password"
-                className="block w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset sm:text-sm"
-                placeholder="Password"
-                required
-                ref={passwordRef}
-              />
-            </div>
+            <Input
+              label="Password"
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Password"
+              required
+              ref={passwordRef}
+              requiredStars={false}
+            />
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full bg-accent-2">
               Sign in
             </Button>
           </form>

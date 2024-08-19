@@ -1,3 +1,26 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.dark input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 50px #1e293b inset;
+  -webkit-text-fill-color: hsl(0 0% 100% / 80%);
+}
+
+.input-validation {
+  outline: 2px solid transparent;
+}
+
+.input-validation:not(:placeholder-shown):valid {
+  outline-color: rgb(22 163 74 / 1);
+}
+
+.input-validation:not(:placeholder-shown):invalid {
+  outline-color: rgb(185 28 28 / 1);
+}
+
+.input-validation:focus:invalid {
+  outline-color: rgb(202 138 4 /1);
+}

@@ -1,10 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const NavItem = ({ children, name, path }) => {
   return (
-    <li className="font-semibold">
-      {children || <Link to={path}>{name}</Link>}
+    <li className="font-semibold hover:text-accent">
+      {children || (
+        <NavLink
+          to={path}
+          className={({ isActive }) => (isActive ? "text-accent" : "")}
+        >
+          {name}
+        </NavLink>
+      )}
     </li>
   );
 };
