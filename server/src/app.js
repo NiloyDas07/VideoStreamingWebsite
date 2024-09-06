@@ -4,9 +4,27 @@ import cookieParser from "cookie-parser";
 
 const app = express();
 
+// Handle CORS
+const allowedOrigins = [
+  process.env.CORS_ORIGIN_LOCAL, // Localhost (for development)
+  process.env.CORS_ORIGIN_PROD, // Vercel frontend (for production)
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN_LOCAL,
     credentials: true,
   })
 );

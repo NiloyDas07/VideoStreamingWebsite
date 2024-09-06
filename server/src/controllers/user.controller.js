@@ -241,7 +241,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   // Check if refresh token is valid.
   if (user.refreshToken !== incomingRefreshToken) {
-    console.log(user, incomingRefreshToken);
     throw new ApiError(401, "Refresh Token is expired or used.");
   }
 
@@ -520,8 +519,6 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Channel not found.");
   }
 
-  console.log(channel);
-
   return res
     .status(200)
     .json(
@@ -651,7 +648,6 @@ const getWatchHistory = asyncHandler(async (req, res) => {
 // Add Video To Watch History
 const addVideoToWatchHistory = asyncHandler(async (req, res) => {
   const { videoId } = req.params;
-  console.log(videoId);
   if (!isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid videoId");
   }

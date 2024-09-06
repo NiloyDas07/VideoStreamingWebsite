@@ -36,7 +36,6 @@ const uploadOnCloudinary = async ({
       fs.unlinkSync(localFilePath); // Remove the locally saved temp file.
       return response;
     } else {
-      console.log("File upload failed");
       return null;
     }
   } catch (error) {
@@ -53,10 +52,8 @@ const deleteFromCloudinary = async ({ publicId, resourceType = "image" }) => {
     const response = await cloudinary.api.delete_resources(publicId, {
       resource_type: resourceType,
     });
-    console.log("Delete response: ", response);
 
     if (!response || !response.deleted) {
-      console.log("Failed to delete file from Cloudinary");
       return null;
     }
 
