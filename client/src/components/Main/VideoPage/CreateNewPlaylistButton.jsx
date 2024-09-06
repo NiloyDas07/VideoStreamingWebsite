@@ -52,9 +52,10 @@ const CreateNewPlaylistButton = ({ handleCloseModal }) => {
   };
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 hover:text-accent-2 focus:text-accent-2">
       {!open && (
         <button
+          type="button"
           onClick={() => setOpen(true)}
           className="flex w-full items-center justify-between"
         >

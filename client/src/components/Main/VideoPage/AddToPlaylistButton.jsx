@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -10,8 +10,7 @@ import {
 import { MdOutlinePlaylistAdd } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 
-import Modal from "../Modal";
-import CreateNewPlaylistButton from "./CreateNewPlaylistButton";
+import { Tooltip, Modal, CreateNewPlaylistButton } from "../../";
 
 const AddToPlaylistButton = ({ size = "xl", className }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -60,7 +59,7 @@ const AddToPlaylistButton = ({ size = "xl", className }) => {
       try {
         const response = await dispatch(
           removeVideoFromPlaylist({
-            videoId: video._id,
+            videoId: video?._id,
             playlistId: playlistId,
           }),
         );
@@ -74,26 +73,30 @@ const AddToPlaylistButton = ({ size = "xl", className }) => {
   };
 
   return (
-    <div className={`${className} flex items-center`}>
-      <button onClick={handleOpenModal}>
+    <Tooltip
+      tooltip={"Add to Playlist"}
+      className={`${className} flex items-center`}
+    >
+      <button type="button" onClick={handleOpenModal}>
         <span className="sr-only">Add to Playlist</span>
-        <MdOutlinePlaylistAdd className={`text-${size}`} />
+        <MdOutlinePlaylistAdd
+          className={`text-${size} hover:text-accent focus:text-accent-2`}
+        />
       </button>
 
       <Modal
-        className="h-1/2"
         isVisible={isModalVisible}
         onClose={handleCloseModal}
+        bgColor="bg-secondary-1 dark:bg-secondary-2 dark:opacity-95"
+        innerClassName="py-4"
       >
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-8">
-            <h2 className="text-lg font-bold">Add to Playlist</h2>
+        <div className="flex items-center justify-between gap-8">
+          <h2 className="text-lg font-bold">Add to Playlist</h2>
 
-            <button onClick={handleCloseModal}>
-              <span className="sr-only">Close modal</span>
-              <IoClose className="text-2xl" />
-            </button>
-          </div>
+          <button type="button" onClick={handleCloseModal}>
+            <span className="sr-only">Close modal</span>
+            <IoClose className="text-2xl hover:text-accent-2 focus:text-accent-2" />
+          </button>
         </div>
 
         {/* All playlists of the user. */}
@@ -104,20 +107,23 @@ const AddToPlaylistButton = ({ size = "xl", className }) => {
           <div className="flex flex-col gap-4">
             <ul className="flex flex-col gap-2">
               {playlists.map((playlist) => (
-                <li key={playlist._id} className="flex items-center gap-2">
+                <li
+                  key={playlist?._id}
+                  className="flex items-center gap-2 hover:text-accent-2 focus:text-accent-2"
+                >
                   <input
                     type="checkbox"
-                    id={`playlist-${playlist._id}`}
-                    checked={playlist.videos.includes(video._id)}
+                    id={`playlist-${playlist?._id}`}
+                    checked={playlist?.videos?.includes(video?._id)}
                     onChange={(e) =>
                       handleTogglePlaylistSelection(e.target, playlist._id)
                     }
                   />
                   <label
-                    htmlFor={`playlist-${playlist._id}`}
+                    htmlFor={`playlist-${playlist?._id}`}
                     className="cursor-pointer truncate"
                   >
-                    {playlist.name}
+                    {playlist?.name}
                   </label>
                 </li>
               ))}
@@ -127,7 +133,7 @@ const AddToPlaylistButton = ({ size = "xl", className }) => {
 
         <CreateNewPlaylistButton handleCloseModal={handleCloseModal} />
       </Modal>
-    </div>
+    </Tooltip>
   );
 };
 

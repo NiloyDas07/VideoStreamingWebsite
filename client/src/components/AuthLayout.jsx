@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Container from "./Container";
+import { Container, Loading } from "./";
 
 function AuthLayout({ children, authentication = true }) {
   const navigate = useNavigate();
@@ -29,7 +29,10 @@ function AuthLayout({ children, authentication = true }) {
   }, [authStatus, authentication, navigate, loading, appLoading]);
 
   return loader || loading || appLoading ? (
-    <Container className="py-4"> Loading... </Container>
+    <Container className="py-4">
+      {" "}
+      <Loading />{" "}
+    </Container>
   ) : (
     <>{children}</>
   );

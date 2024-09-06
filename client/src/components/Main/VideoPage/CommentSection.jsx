@@ -8,17 +8,17 @@ import AddComment from "./AddComment";
 import ErrorDisplay from "../ErrorDisplay";
 
 const CommentSection = () => {
-  const videoId = useSelector((state) => state.video.video.data._id);
+  const { video } = useSelector((state) => state.video);
   const { comments, loading, error } = useSelector((state) => state.comments);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllComments({ videoId }));
-  }, []);
+    dispatch(getAllComments({ videoId: video?._id }));
+  }, [video, dispatch]);
 
   return (
-    <div className="flex w-full flex-col bg-white">
+    <div className="flex w-full flex-col">
       <div className="flex items-center justify-between px-4 py-2">
         <h2 className="text-lg font-semibold">Comments</h2>
       </div>

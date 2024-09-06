@@ -2,9 +2,8 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getVideoById } from "../actions/videoActions";
-import CommentSection from "../components/Main/VideoPage/CommentSection";
-import VideoPlayer from "../components/Main/VideoPage/VideoPlayer";
-import VideoDetails from "../components/Main/VideoPage/VideoDetails";
+import { CommentSection, VideoDetails, VideoPlayer } from "../components/";
+import { addVideoToWatchHistory } from "../actions/userActions";
 
 const Video = () => {
   const dispatch = useDispatch();
@@ -13,19 +12,34 @@ const Video = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    dispatch(getVideoById(id));
+    const fetchVideo = async () => {
+      try {
+        if (id !== video?._id) {
+          const response = await dispatch(getVideoById(id));
+
+          if (getVideoById.fulfilled.match(response)) {
+            dispatch(addVideoToWatchHistory({ videoId: id }));
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchVideo();
   }, [dispatch, id]);
 
   return (
     <div className="p-4">
-      {video ? (
+      {1 === 1 ? (
         <>
           <div>
-            <VideoPlayer  />
+            <VideoPlayer />
 
             <VideoDetails />
           </div>
-          {/* <CommentSection /> */}
+
+          <CommentSection />
         </>
       ) : (
         <div>No video found</div>

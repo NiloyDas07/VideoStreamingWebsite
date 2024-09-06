@@ -13,6 +13,7 @@ import {
   AVATAR_FOLDER_PATH,
   COVER_IMAGE_FOLDER_PATH,
 } from "../consts/cloudinary.consts.js";
+import mongoose, { isValidObjectId, Types } from "mongoose";
 
 // Function to generate access and refresh tokens.
 const generateAccessAndRefreshTokens = async (user) => {
@@ -323,13 +324,25 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
   const { username, fullName } = req.body;
 
+  if (!username?.trim() && !fullName?.trim()) {
+    throw new ApiError(400, "Username and full name are required.");
+  }
+
   // Only update what is provided by the user.
   const updateFields = {};
   if (username) {
     // Check if username already exists.
     const usernameExists = await User.findOne({ username });
     if (usernameExists) {
-      throw new ApiError(400, "Username already exists.");
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(
+            400,
+            { error: "username exists" },
+            "Username already exists."
+          )
+        );
     }
 
     updateFields.username = username;
@@ -345,6 +358,10 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
       },
       { new: true }
     ).select("-password -refreshToken");
+  }
+
+  if (!user) {
+    throw new ApiError(500, "Failed to update account details.");
   }
 
   return res
@@ -440,21 +457,21 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 // Get User Channel Profile details
 const getUserChannelProfile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
+  const { channelName } = req.params;
 
-  if (!username?.trim()) {
-    throw new ApiError(400, "User Profile :: Username is missing.");
+  if (!channelName.trim()) {
+    throw new ApiError(400, "Channel :: Channel name is required.");
   }
 
   const channel = await User.aggregate([
     {
       $match: {
-        username: username?.toLowerCase(),
+        username: channelName,
       },
     },
     {
       $lookup: {
-        from: "Subscription",
+        from: "subscriptions",
         localField: "_id",
         foreignField: "channel",
         as: "subscribers",
@@ -462,7 +479,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
-        from: "Subscription",
+        from: "subscriptions",
         localField: "_id",
         foreignField: "subscriber",
         as: "subscribedTo",
@@ -514,57 +531,175 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
 
 // Get Watch History
 const getWatchHistory = asyncHandler(async (req, res) => {
-  console.log("User: ", req.user);
-  // const user = await User.aggregate([
-  //   {
-  //     $match: {
-  //       _id: mongoose.Types.ObjectId(req.user?._id), // Needed because we can't directly get the full _id inside aggregate pipeline.
-  //     },
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: "Video",
-  //       localField: "watchHistory",
-  //       foreignField: "_id",
-  //       as: "watchHistory",
-  //       pipeline: [
-  //         {
-  //           $lookup: {
-  //             from: "User",
-  //             localField: "owner",
-  //             foreignField: "_id",
-  //             as: "owner",
-  //             pipeline: [
-  //               {
-  //                 $project: {
-  //                   username: 1,
-  //                   fullName: 1,
-  //                   avatar: 1,
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         },
-  //         {
-  //           $addFields: {
-  //             owner: {
-  //               $first: "$owner",
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  // ]);
+  const {
+    pageNumber = 1,
+    pageSize = 10,
+    sortBy = "createdAt",
+    sortType = "desc",
+  } = req.query;
+
+  if (!isValidObjectId(req.user._id)) {
+    throw new ApiError(400, "Invalid user id.");
+  }
+
+  const watchHistory = User.aggregate([
+    {
+      $match: {
+        _id: req.user._id,
+      },
+    },
+    {
+      $addFields: {
+        watchHistory: {
+          $map: {
+            input: { $range: [0, { $size: "$watchHistory" }] },
+            as: "index",
+            in: {
+              index: "$$index",
+              videoId: { $arrayElemAt: ["$watchHistory", "$$index"] },
+            },
+          },
+        },
+      },
+    },
+    {
+      $unwind: {
+        path: "$watchHistory",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "watchHistory.videoId",
+        foreignField: "_id",
+        as: "watchHistory.videoDetails",
+      },
+    },
+    {
+      $unwind: {
+        path: "$watchHistory.videoDetails",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $sort: {
+        "watchHistory.index": -1,
+      },
+    },
+    {
+      $replaceRoot: {
+        newRoot: "$watchHistory.videoDetails",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+      },
+    },
+    {
+      $unwind: {
+        path: "$owner",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        thumbnail: 1, //cloudinary url
+        duration: 1,
+        views: 1,
+        createdAt: 1,
+        isPublished: 1,
+        owner: {
+          _id: 1,
+          username: 1,
+          avatar: 1, //cloudinary url
+        },
+      },
+    },
+  ]);
+
+  const aggregateOptions = {
+    page: parseInt(pageNumber),
+    limit: parseInt(pageSize),
+  };
+
+  const response = await User.aggregatePaginate(watchHistory, aggregateOptions);
 
   return res.status(200).json(
     new ApiResponse(
       200,
-      // user[0].watchHistory,
-      [],
+      {
+        watchHistory: response.docs,
+        totalPages: response.totalPages,
+        currentPage: response.page,
+        hasPrevPage: response.hasPrevPage,
+        hasNextPage: response.hasNextPage,
+        prevPage: response.prevPage,
+        nextPage: response.nextPage,
+      },
       "Watch History fetched successfully."
     )
   );
+});
+
+// Add Video To Watch History
+const addVideoToWatchHistory = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  console.log(videoId);
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid videoId");
+  }
+
+  const videoMongoId = Types.ObjectId.createFromHexString(videoId);
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $push: {
+        watchHistory: {
+          $each: [videoMongoId],
+          $slice: -100, // Ensure the array doesn't exceed 100 elements by removing the oldest ones
+        },
+      },
+    },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found.");
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedUser,
+        "Video added to watch history successfully."
+      )
+    );
+});
+
+// Delete Account
+const deleteAccount = asyncHandler(async (req, res) => {
+  if (!isValidObjectId(req.user._id)) {
+    throw new ApiError(400, "Invalid user id.");
+  }
+
+  const deletedUser = await User.findByIdAndDelete(req.user._id);
+  if (!deletedUser) {
+    throw new ApiError(404, "User not found.");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, deletedUser, "Account deleted successfully."));
 });
 
 export {
@@ -579,4 +714,6 @@ export {
   updateUserCoverImage,
   getUserChannelProfile,
   getWatchHistory,
+  addVideoToWatchHistory,
+  deleteAccount,
 };

@@ -19,7 +19,16 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
   }
 
   // Verify the access token.
-  const decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw new ApiError(401, "Access Token Expired :: verifyJWT, auth.middleware");
+    }
+    throw new ApiError(401, "Invalid Access Token :: verifyJWT, auth.middleware");
+  }
+  
   if (!decodedToken) {
     throw new ApiError(
       401,

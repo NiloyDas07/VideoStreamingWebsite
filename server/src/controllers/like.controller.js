@@ -208,14 +208,26 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 
 // Get liked videos by logged in user.
 const getLikedVideos = asyncHandler(async (req, res) => {
+  console.log(req.user);
   const { _id } = req.user;
 
-  const likes = await Like.aggregate([
+  const {
+    pageNumber = 1,
+    pageSize = 10,
+    query = "",
+    sortBy = "createdAt",
+    sortType = "desc",
+  } = req.query;
+
+  // Search by title and description
+  const matchOptions = {
+    likedBy: _id,
+    video: { $ne: null },
+  };
+
+  const likes = Like.aggregate([
     {
-      $match: {
-        likedBy: _id,
-        video: { $ne: null },
-      },
+      $match: matchOptions,
     },
     {
       $lookup: {
@@ -241,35 +253,71 @@ const getLikedVideos = asyncHandler(async (req, res) => {
             },
           },
           {
-            $unwind: "$owner",
+            $unwind: {
+              path: "$owner",
+              preserveNullAndEmptyArrays: true,
+            },
           },
         ],
       },
     },
     {
-      $unwind: "$video",
+      $unwind: {
+        path: "$video",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $match: {
+        $or: [
+          { "video.title": { $regex: query, $options: "i" } },
+          { "video.description": { $regex: query, $options: "i" } },
+          { "video.owner.username": { $regex: query, $options: "i" } },
+        ],
+      },
     },
     {
       $project: {
-        updatedAt: 1,
-        video: {
-          title: 1,
-          description: 1,
-          thumbnail: 1,
-          videoFile: 1,
-          owner: 1,
-        },
+        _id: "$video._id",
+        title: "$video.title",
+        description: "$video.description",
+        thumbnail: "$video.thumbnail",
+        videoFile: "$video.videoFile",
+        createdAt: "$video.createdAt",
+        views: "$video.views",
+        duration: "$video.duration",
+        isPublished: "$video.isPublished",
+        owner: "$video.owner",
       },
     },
   ]);
+
+  const aggregateOptions = {
+    page: parseInt(pageNumber),
+    limit: parseInt(pageSize),
+  };
+
+  const response = await Like.aggregatePaginate(likes, aggregateOptions);
 
   if (!likes) {
     throw new ApiError(500, "Failed to fetch liked videos.");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, likes, "Fetched all liked videos."));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        videos: response.docs,
+        totalPages: response.totalPages,
+        currentPage: response.page,
+        hasPrevPage: response.hasPrevPage,
+        hasNextPage: response.hasNextPage,
+        prevPage: response.prevPage,
+        nextPage: response.nextPage,
+      },
+      "Fetched all liked videos."
+    )
+  );
 });
 
 // Get the liked count of a content.

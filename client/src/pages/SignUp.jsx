@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Logo, Button, Input } from "../components";
-import { createAccount } from "../actions/authActions";
+import { createAccount } from "../actions/userActions";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -33,7 +33,7 @@ const SignUp = () => {
       formData.append("avatar", avatarRef.current.files[0]);
     } else {
       // Append default image from public folder
-      const defaultAvatar = "/public/defaultAvatar.png";
+      const defaultAvatar = "/images/defaultAvatar.jpg";
       const response = await fetch(defaultAvatar);
       const blob = await response.blob();
       formData.append("avatar", blob, "default-avatar.png");
@@ -44,7 +44,7 @@ const SignUp = () => {
       formData.append("coverImage", coverImageRef.current.files[0]);
     } else {
       // Append default image from public folder
-      const defaultCoverImage = "/public/defaultCoverImage.png";
+      const defaultCoverImage = "images/defaultCoverImage.jpeg";
       const response = await fetch(defaultCoverImage);
       const blob = await response.blob();
       formData.append("coverImage", blob, "default-cover-image.png");

@@ -31,6 +31,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     $or: [
       { title: { $regex: query, $options: "i" } },
       { description: { $regex: query, $options: "i" } },
+      { "owner.username": { $regex: query, $options: "i" } },
     ],
     isPublished: true,
   };
@@ -322,7 +323,7 @@ const updateVideo = asyncHandler(async (req, res) => {
   );
 
   if (!updatedVideo) {
-    throw new ApiError(404, "Video not found.");
+    throw new ApiError(404, "Unauthorized or Video not found.");
   }
 
   return res

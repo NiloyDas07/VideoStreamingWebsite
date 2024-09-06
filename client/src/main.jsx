@@ -18,6 +18,17 @@ import {
   Playlists,
   Playlist,
   SignUp,
+  ProfilePage,
+  LikedVideos,
+  WatchHistory,
+  EditProfile,
+  Channel,
+  ChannelHome,
+  ChannelVideos,
+  ChannelPlaylists,
+  ChangePassword,
+  DemoLogin,
+  ProfileHome,
 } from "./pages/";
 
 const router = createBrowserRouter([
@@ -26,26 +37,26 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/" || "/home",
+        path: "/" || "home",
         element: <Home />,
       },
       {
-        path: "/video/:id",
+        path: "video/:id",
         element: <Video />,
       },
       {
-        path: "/add-video",
+        path: "login",
         element: (
-          <AuthLayout authentication={true}>
-            <AddVideo />
+          <AuthLayout authentication={false}>
+            <Login />
           </AuthLayout>
         ),
       },
       {
-        path: "/login",
+        path: "demo-login",
         element: (
           <AuthLayout authentication={false}>
-            <Login />
+            <DemoLogin />
           </AuthLayout>
         ),
       },
@@ -58,13 +69,44 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "playlists",
+        path: ":username",
         element: (
-          <AuthLayout>
-            <Playlists />
+          <AuthLayout authentication={true}>
+            <ProfilePage />
           </AuthLayout>
         ),
+        children: [
+          {
+            path: "",
+            element: <ProfileHome />,
+          },
+          {
+            path: "add-video",
+            element: <AddVideo />,
+          },
+          {
+            path: ":edit-profile",
+            element: <EditProfile />,
+          },
+          {
+            path: "change-password",
+            element: <ChangePassword />,
+          },
+          {
+            path: "playlists",
+            element: <Playlists />,
+          },
+          {
+            path: "liked-videos",
+            element: <LikedVideos />,
+          },
+          {
+            path: "watch-history",
+            element: <WatchHistory />,
+          },
+        ],
       },
+
       {
         path: "playlist/:id",
         element: (
@@ -72,6 +114,25 @@ const router = createBrowserRouter([
             <Playlist />
           </AuthLayout>
         ),
+      },
+
+      {
+        path: "channel/:channelName/",
+        element: <Channel />,
+        children: [
+          {
+            path: "",
+            element: <ChannelHome />,
+          },
+          {
+            path: "videos",
+            element: <ChannelVideos />,
+          },
+          {
+            path: "playlists",
+            element: <ChannelPlaylists />,
+          },
+        ],
       },
 
       // For unknown routes

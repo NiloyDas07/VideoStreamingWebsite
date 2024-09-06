@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import Button from "./Button";
+import { Button } from "./";
 import { axiosInstance } from "../utils/axios.util";
+import { handleRequestWithTokenRefresh } from "../utils/tokenRefresh";
 
-const SubscribeButton = ({ channelId, className, ...props }) => {
+const SubscribeButton = ({ channelId, onClick, className, ...props }) => {
   const { user } = useSelector((state) => state.auth);
 
   const [subscribed, setSubscribed] = useState(false);
@@ -25,11 +26,16 @@ const SubscribeButton = ({ channelId, className, ...props }) => {
     try {
       // If subscription exists, delete it, else create it.
       // Returns the updated subscription if subscription is created. Returns false if subscription is deleted.
-      const response = await axiosInstance.post(
-        `/subscriptions/channel/${channelId}`,
+      const response = await handleRequestWithTokenRefresh(
+        async () =>
+          await axiosInstance.post(`/subscriptions/channel/${channelId}`),
       );
 
+      if (response instanceof Error || response?.error) throw response;
+
       setSubscribed(response.data?.data ? true : false);
+
+      if (onClick) onClick();
     } catch (error) {
       if (error.response && error.response.status === 403) {
         alert("Can't subscribe to your own channel");
@@ -43,9 +49,12 @@ const SubscribeButton = ({ channelId, className, ...props }) => {
     async function checkSubscription() {
       if (user) {
         try {
-          const response = await axiosInstance.get(
-            `/subscriptions/channel/${channelId}`,
+          const response = await handleRequestWithTokenRefresh(
+            async () =>
+              await axiosInstance.get(`/subscriptions/channel/${channelId}`),
           );
+
+          if (response instanceof Error || response?.error) throw response;
 
           setSubscribed(response.data?.data ? true : false);
         } catch (error) {
@@ -65,7 +74,7 @@ const SubscribeButton = ({ channelId, className, ...props }) => {
     <Button
       bgColor={subscribed ? "bg-black" : "bg-red-600"}
       borderRadius="rounded-full"
-      className={`text-lg ${className}`}
+      className={`${className}`}
       onClick={toggleSubscription}
       {...props}
     >

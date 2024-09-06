@@ -7,6 +7,7 @@ import {
   commentSlice,
   playListSlice,
   UiSlice,
+  channelSlice,
 } from "../features/";
 
 const store = configureStore({
@@ -17,6 +18,7 @@ const store = configureStore({
     comments: commentSlice,
     playlists: playListSlice,
     ui: UiSlice,
+    channel: channelSlice,
   },
 });
 

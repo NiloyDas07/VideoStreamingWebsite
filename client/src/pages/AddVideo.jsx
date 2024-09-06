@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Container from "../components/Container";
 
 import { addNewVideo } from "../actions/videoActions";
-import { resetVideo } from "../features/videoSlice";
 import { useNavigate } from "react-router-dom";
-import { Button, Input } from "../components";
+import { Button, Input, Textarea } from "../components";
 
 const AddVideo = () => {
   const dispatch = useDispatch();
@@ -21,8 +20,6 @@ const AddVideo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    dispatch(resetVideo());
-
     // Create FormData object
     const formData = new FormData();
     formData.append("title", titleRef.current.value);
@@ -31,15 +28,15 @@ const AddVideo = () => {
     formData.append("thumbnail", thumbnailRef.current.files[0]);
 
     // Dispatch addNewVideo action and await the result
-    const resultAction = await dispatch(addNewVideo(formData));
+    const response = await dispatch(addNewVideo(formData));
 
-    if (addNewVideo.fulfilled.match(resultAction)) {
+    if (addNewVideo.fulfilled.match(response)) {
       // Redirect to the video page if the video is added successfully
-      console.log(resultAction.payload);
-      navigate(`/videos/${resultAction.payload?.data?._id}`);
+      console.log(response.payload);
+      navigate(`/videos/${response.payload?.data?._id}`);
     } else {
       // Handle the error if needed
-      console.error(resultAction.payload);
+      console.error(response.payload);
     }
   };
 
@@ -48,9 +45,9 @@ const AddVideo = () => {
   ) : (
     <Container className="py-4">
       <div className="flex h-full flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold mb-6">Add New Video</h1>
+        <h1 className="mb-6 text-3xl font-bold">Add New Video</h1>
         <div className="rounded-lg bg-white p-8 shadow-md dark:bg-secondary-2">
-          <form onSubmit={handleSubmit} className=" flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* Title */}
             <Input
               label="Title"
@@ -63,7 +60,7 @@ const AddVideo = () => {
             />
 
             {/* Description */}
-            <Input
+            <Textarea
               label="Description"
               type="textarea"
               name="description"

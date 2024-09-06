@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-import { formatDistanceToNow } from "date-fns";
-import ChannelDetails from "../ChannelDetails";
-import SubscribeButton from "../../SubscribeButton";
-import LikeButton from "../LikeButton";
-import ShareButton from "../ShareButton";
-import AddToPlaylistButton from "./AddToPlaylistButton";
+import {
+  VideoOwnerDetails,
+  SubscribeButton,
+  LikeButton,
+  ShareButton,
+  AddToPlaylistButton,
+  EditVideoButton,
+  DeleteButton,
+} from "../../";
 
 const VideoDetails = ({ className, ...props }) => {
   const { video, loading, error } = useSelector((state) => state.video);
@@ -19,15 +22,18 @@ const VideoDetails = ({ className, ...props }) => {
     setShowMore(!showMore);
   };
 
+  const isVideoOwner = video?.owner?._id === user?._id;
+
   return (
     <>
       {/* Title*/}
       <h1 className="mb-4 text-2xl font-bold">{video?.title}</h1>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <ChannelDetails video={video} />
-        {!(video?.owner?._id === user?._id) && (
-          <SubscribeButton channelId={video?.owner?._id} className="max-w-36" />
+        <VideoOwnerDetails video={video} />
+
+        {!isVideoOwner && (
+          <SubscribeButton channelId={video?.owner?._id} className="max-w-36 text-lg" />
         )}
 
         <LikeButton contentId={video?._id} contentType={"video"} size="2xl" />
@@ -35,6 +41,10 @@ const VideoDetails = ({ className, ...props }) => {
         <ShareButton size="2xl" />
 
         <AddToPlaylistButton size="2xl" />
+
+        {isVideoOwner && <EditVideoButton />}
+
+        {isVideoOwner && <DeleteButton />}
       </div>
 
       <div className="rounded-lg bg-gray-100 p-4">
@@ -45,6 +55,7 @@ const VideoDetails = ({ className, ...props }) => {
             : `${video?.description?.substring(0, 100)}...`}
         </p>
         <button
+          type="button"
           onClick={toggleShowMore}
           className="text-blue-500 hover:underline"
         >

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
-import { getCurrentUser } from "./actions/authActions";
+import { getCurrentUser } from "./actions/userActions";
 
 import { Container, Header, Sidebar } from "./components/";
 import { setTheme } from "./features/UiSlice";
@@ -41,7 +41,7 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="font-inter flex min-h-screen w-full flex-grow flex-col bg-white text-primary dark:bg-primary dark:text-white">
+    <div className="flex min-h-screen w-full flex-grow flex-col bg-white font-inter text-primary dark:bg-primary dark:text-white">
       <Header />
       <div className="mt-[55px] flex h-full w-full gap-4">
         {<Sidebar />}

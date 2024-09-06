@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Container, Logo, Button, Input } from "../components/";
 
-import { login, logout } from "../actions/authActions";
+import { login, logout } from "../actions/userActions";
 
 const Login = () => {
   const dispatch = useDispatch();

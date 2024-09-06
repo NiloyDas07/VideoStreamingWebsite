@@ -2,10 +2,14 @@ import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewComment } from "../../../actions/commentActions";
 
+import { Input } from "../../";
+
 const AddComment = () => {
   const newCommentRef = useRef(null);
 
-  const videoId = useSelector((state) => state.video.video.data._id);
+  const videoId = useSelector((state) => state.video.video?._id);
+
+  const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
 
@@ -31,21 +35,23 @@ const AddComment = () => {
 
   return (
     <div className="mb-4 flex items-start space-x-4">
-      <div className="flex-shrink-0">
+      <div className="h-10 w-10">
         <img
-          className="h-10 w-10 rounded-full"
-          src="https://images.pexels.com/photos/1172650/pexels-photo-1172650.jpeg?auto=compress&cs=tinysrgb&w=200"
-          alt="User avatar"
+          src={user?.avatar?.url || "/images/defaultAvatar.jpg"}
+          alt="comment owner avatar"
+          className="h-full w-full rounded-full"
         />
       </div>
       <div className="flex-grow">
-        <textarea
+        <Input
+          type="textarea"
           ref={newCommentRef}
           className="w-full rounded border p-2"
           placeholder="Add a public comment..."
         />
         <div className="mt-2 flex justify-end">
           <button
+            type="button"
             onClick={handleAddComment}
             className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
           >

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { IoShareSocial } from "react-icons/io5";
+import Tooltip from "../Tooltip";
 
 const ShareButton = ({ size = "xl", className }) => {
   const [copied, setCopied] = useState(false);
@@ -19,17 +20,26 @@ const ShareButton = ({ size = "xl", className }) => {
   };
 
   return (
-    <div className={`${className} relative`}>
-      <button onClick={handleCopyLink} className="flex items-center">
-        <IoShareSocial className={`mr-2 text-${size}`} />
-        <span className="sr-only">Share this link</span>
-      </button>
-      {copied && (
-        <span className="absolute -left-20 -top-4 -translate-y-1/2 transform rounded bg-green-500 px-2 py-1 text-white shadow">
-          Link copied!
-        </span>
-      )}
-    </div>
+    <Tooltip tooltip="Share this video">
+      <div className={`${className} relative`}>
+        <button
+          type="button"
+          onClick={handleCopyLink}
+          className="flex items-center"
+        >
+          <IoShareSocial
+            className={`text-${size} hover:text-accent focus:text-accent-2`}
+          />
+          <span className="sr-only">Share this video</span>
+        </button>
+
+        {copied && (
+          <span className="absolute -left-20 -top-4 -translate-y-1/2 transform rounded bg-green-500 px-2 py-1 text-white shadow">
+            Video Link copied!
+          </span>
+        )}
+      </div>
+    </Tooltip>
   );
 };
 

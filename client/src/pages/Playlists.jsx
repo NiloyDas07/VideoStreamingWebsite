@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserPlaylists } from "../actions/playlistActions";
-import Container from "../components/Container";
-import PlaylistCard from "../components/Main/PlaylistsPage/PlaylistCard";
+import { Container, PlaylistCard, SearchBox } from "../components/";
 
 const Playlists = () => {
   const dispatch = useDispatch();
@@ -19,17 +18,18 @@ const Playlists = () => {
     };
 
     fetchPlaylists();
-  });
+  }, []);
 
   return (
-    <>
+    <div className="py-4">
+      <SearchBox />
       <h1 className="mb-4 text-3xl font-bold">Your Playlists</h1>
       <div className="flex flex-wrap gap-4">
         {playlists.map((playlist) => (
           <PlaylistCard key={playlist._id} playlist={playlist} />
         ))}
       </div>
-    </>
+    </div>
   );
 };
 

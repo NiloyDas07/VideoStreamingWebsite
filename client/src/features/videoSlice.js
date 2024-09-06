@@ -46,7 +46,6 @@ const videoSlice = createSlice({
       })
       .addCase(getVideoById.fulfilled, (state, action) => {
         state.loading = false;
-        state.error = null;
         state.video = action.payload;
       })
       .addCase(getVideoById.rejected, (state, action) => {
@@ -57,18 +56,14 @@ const videoSlice = createSlice({
       .addCase(deleteVideo.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.video = null;
       })
       .addCase(deleteVideo.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.video = state.video.filter(
-          (video) => video.id !== action.payload.id,
-        );
+        state.video = action.payload;
       })
       .addCase(deleteVideo.rejected, (state, action) => {
         state.loading = false;
-        state.video = null;
         state.error = action.payload;
       })
       .addCase(updateVideo.pending, (state) => {

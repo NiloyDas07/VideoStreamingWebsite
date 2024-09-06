@@ -1,11 +1,12 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { setSearchQuery } from "../../features/multipleVideoSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SearchBox = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const searchInputRef = useRef(null);
 
@@ -18,7 +19,7 @@ const SearchBox = () => {
   return (
     <form
       onSubmit={handleSearch}
-      className="mx-auto my-4 flex w-full items-center"
+      className="mx-auto mb-4 flex w-full items-center"
     >
       <input
         type="text"

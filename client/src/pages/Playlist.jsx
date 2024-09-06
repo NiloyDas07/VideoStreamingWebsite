@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { getPlaylistById } from "../actions/playlistActions";
+import { deletePlaylist, getPlaylistById } from "../actions/playlistActions";
 import { getAllVideos } from "../actions/videoActions";
-import VideoCard from "../components/Main/VideoCard";
+import { VideoCard, SearchBox, Button } from "../components/";
 
 const Playlist = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -33,6 +34,16 @@ const Playlist = () => {
     }
   }, [playlist]);
 
+  const handlePlaylistDelete = async () => {
+    try {
+      await dispatch(deletePlaylist({ playlistId: id }));
+      navigate("/playlists");
+    } catch (error) {
+      alert("Failed to delete playlist");
+      console.log(error);
+    }
+  };
+
   if (loading) {
     return (
       <div>
@@ -43,17 +54,27 @@ const Playlist = () => {
 
   if (!videos || videos.length === 0) {
     return (
-      <div>
-        <p>Your playlist is empty.</p>
+      <div className="flex flex-col gap-4">
+        <p className="text-center text-2xl">Playlist is empty.</p>
+        <Button
+          bgColor="bg-red-600"
+          className="w-full hover:underline"
+          onClick={handlePlaylistDelete}
+        >
+          Delete Playlist
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-wrap justify-around gap-3 py-4">
-      {videos.map((video) => (
-        <VideoCard video={video} key={video._id} />
-      ))}
+    <div className="flex flex-col gap-4 py-4">
+      <SearchBox />
+      <div className="flex flex-wrap justify-around gap-3 py-4">
+        {videos.map((video) => (
+          <VideoCard video={video} key={video._id} />
+        ))}
+      </div>
     </div>
   );
 };

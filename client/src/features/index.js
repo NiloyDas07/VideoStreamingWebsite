@@ -1,9 +1,10 @@
-import authSlice from "../features/authSlice";
+import authSlice from "./userSlice";
 import videoSlice from "../features/videoSlice";
 import multipleVideoSlice from "../features/multipleVideoSlice";
 import commentSlice from "../features/commentSlice";
 import playListSlice from "../features/playListSlice";
 import UiSlice from "../features/UiSlice";
+import channelSlice from "./channelSlice";
 
 export {
   authSlice,
@@ -12,4 +13,5 @@ export {
   commentSlice,
   playListSlice,
   UiSlice,
+  channelSlice,
 };
