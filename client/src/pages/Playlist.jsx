@@ -75,6 +75,14 @@ const Playlist = () => {
           <VideoCard video={video} key={video._id} />
         ))}
       </div>
+
+      <Button
+        bgColor="bg-red-600"
+        className="w-full hover:underline"
+        onClick={handlePlaylistDelete}
+      >
+        Delete Playlist
+      </Button>
     </div>
   );
 };
