@@ -88,7 +88,7 @@ const multipleVideoSlice = createSlice({
             nextPage: action.payload.nextPage,
             prevPage: action.payload.prevPage,
             totalPages: action.payload.totalPages,
-            videos: [...state.videos.videos, ...action.payload.videos],
+            videos: [...state.videos.videos, ...action.payload?.watchHistory],
           };
         } else {
           const { watchHistory, ...rest } = action.payload;

@@ -40,28 +40,34 @@ const Sidebar = () => {
       name: "Home",
       icon: <FaHome className={`h-full w-full`} />,
       path: "/",
+      key: "Home",
     },
     {
       name: "Add Video",
       icon: <RiVideoAddFill className={`h-full w-full`} />,
       path: `/${username}/add-video`,
+      key: "Add Video",
     },
     {
       name: "Profile",
       icon: <FaUser className={`h-full w-full`} />,
       path: `/${username}`,
+      key: "Profile",
     },
     {
       name: "Playlists",
       icon: <PiPlaylistBold className="h-full w-full" />,
       path: `/${username}/playlists`,
+      key: "Playlists",
     },
-    {
+
+    !user?._id && {
       name: "Demo Account Login",
       icon: <IoLogIn className="h-full w-full" />,
       path: "/demo-login",
+      key: "Demo Account Login",
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <>
@@ -73,7 +79,7 @@ const Sidebar = () => {
         <ul className="flex h-full w-fit cursor-default flex-col items-center gap-4 text-secondary-1 md:text-primary md:dark:text-secondary-1">
           {sidebarItems.map((item) => (
             <li
-              key={item.name}
+              key={item.key}
               className="w-full"
               onClick={() => dispatch(toggleSidebar())}
             >

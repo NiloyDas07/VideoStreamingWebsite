@@ -8,19 +8,19 @@ const ProfileSections = () => {
   const sectionItems = [
     {
       name: "Watch History",
-      link: `${user?.username}/watch-history`,
+      link: `watch-history`,
       description: "View your watch history",
       bgColor: "bg-accent-3",
     },
     {
       name: "Liked Videos",
-      link: `${user?.username}/liked-videos`,
+      link: `liked-videos`,
       description: "View videos you liked",
       bgColor: "bg-accent-4",
     },
     {
       name: "Playlists",
-      link: `${user?.username}/playlists`,
+      link: `playlists`,
       description: "View your playlists",
       bgColor: "bg-accent-5",
     },

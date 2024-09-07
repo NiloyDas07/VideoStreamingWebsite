@@ -10,7 +10,6 @@ import {
   getVideosLikedByUser,
   getWatchHistory,
 } from "../../actions/videoActions";
-import { useLocation } from "react-router-dom";
 
 const debounce = (func, wait) => {
   let timeout;
@@ -28,8 +27,6 @@ const Videos = ({ forPage }) => {
   );
   const { channel } = useSelector((state) => state.channel);
 
-  const location = useLocation();
-
   const { hasNextPage, nextPage, videos: videoList } = videos;
 
   // Local state for managing current page number
@@ -41,18 +38,14 @@ const Videos = ({ forPage }) => {
       try {
         if (forPage === "channel") {
           dispatch(getAllVideos({ userId: channel?._id }));
-
         } else if (forPage === "profile") {
           dispatch(getAllVideos({ userId: user._id }));
-
         } else if (forPage === "liked-videos") {
           const res = await dispatch(
             getVideosLikedByUser({ pageNumber: nextPage }),
           );
-
         } else if (forPage === "watch-history") {
           await dispatch(getWatchHistory({ pageNumber: nextPage }));
-
         } else {
           await dispatch(
             getAllVideos({ query: searchQuery, pageNumber: nextPage }),

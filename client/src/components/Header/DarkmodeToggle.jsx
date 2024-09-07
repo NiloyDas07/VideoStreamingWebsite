@@ -27,7 +27,7 @@ const DarkModeToggle = () => {
     >
       {theme === "dark" ? (
         <>
-          <LuSun FiSun className="h-full w-full text-accent" />
+          <LuSun className="h-full w-full text-accent" />
           <span className="sr-only">Switch theme to light mode</span>
         </>
       ) : (
