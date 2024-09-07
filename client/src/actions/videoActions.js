@@ -21,7 +21,7 @@ export const getAllVideos = createAsyncThunk(
       response?.error ||
       response.success === false
     ) {
-      console.log("Error: ", response?.response?.data);
+      console.log("Error: ", response);
       return rejectWithValue(response?.response?.data);
     }
 
