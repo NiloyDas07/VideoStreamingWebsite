@@ -9,7 +9,7 @@ const connectDB = async (retries = 5, waitTime = 5000) => {
         connectTimeoutMS: 10000, // Optional: Timeout for initial connection
         serverSelectionTimeoutMS: 5000, // Optional: Server selection timeout
         socketTimeoutMS: 45000, // Optional: Socket idle timeout
-        maxPoolSize: 10, // Optional: Max connections in the pool
+        maxPoolSize: 50, // Optional: Max connections in the pool
       }
     );
     // console.log(`MongoDB Connected: ${connectionInstance.connection.host}`);
