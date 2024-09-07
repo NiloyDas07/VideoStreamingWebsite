@@ -13,12 +13,12 @@ const SidebarItem = ({ name, path, icon, className = "", ...props }) => {
       {({ isActive }) => (
         <>
           <span
-            className={`h-6 w-6 rounded-md p-[0.15rem] ring-1 ring-opacity-10 ${isActive ? "ring-accent-2" : "ring-transparent"}`}
+            className={`h-6 w-6 flex-shrink-0 rounded-md p-[0.15rem] ring-1 ring-opacity-10 ${isActive ? "ring-accent-2" : "ring-transparent"}`}
           >
             {icon}
           </span>
           <p
-            className={`text-nowrap ${isActive ? "font-semibold" : "font-normal"} transition-all duration-500`}
+            className={`${isActive ? "font-semibold" : "font-normal"} transition-all duration-500`}
           >
             {name}
           </p>
