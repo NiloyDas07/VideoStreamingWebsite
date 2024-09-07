@@ -17,7 +17,7 @@ const VideoPlayer = ({ className, ...props }) => {
     const incrementViewCount = async (videoId) => {
       try {
         const response = await handleRequestWithTokenRefresh(
-          async () => await axiosInstance.patch(`/videos/${videoId}/views`),
+          async () => await axiosInstance.patch(`/videos/increment-views/${videoId}`),
         );
 
         if (response instanceof Error || response?.error) throw response;
