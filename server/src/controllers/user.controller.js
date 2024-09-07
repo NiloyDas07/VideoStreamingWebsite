@@ -100,11 +100,11 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
     fullName,
     avatar: {
-      url: avatarUrl.url,
+      url: avatarUrl.secure_url || avatarUrl.url,
       publicId: avatarUrl.public_id,
     },
     coverImage: {
-      url: coverImageUrl.url,
+      url: coverImageUrl.secure_url || coverImageUrl.url,
       publicId: coverImageUrl.public_id,
     } || {
       url: null,
@@ -199,7 +199,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   const cookieOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: 'None',
+    sameSite: "None",
   };
 
   return res
@@ -254,7 +254,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   const cookieOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: 'None',
+    sameSite: "None",
   };
 
   return res
@@ -402,7 +402,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     {
       $set: {
         avatar: {
-          url: avatarUrl.url,
+          url: avatarUrl.secure_url || avatarUrl.url,
           publicId: avatarUrl.public_id,
         },
       },
@@ -444,7 +444,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     {
       $set: {
         coverImage: {
-          url: coverImageUrl.url,
+          url: coverImageUrl.secure_url || coverImageUrl.url,
           publicId: coverImageUrl.public_id,
         },
       },

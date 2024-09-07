@@ -32,6 +32,7 @@ const uploadOnCloudinary = async ({
     }
 
     const response = await cloudinary.uploader.upload(localFilePath, options);
+    console.log(response);
 
     if (response) {
       fs.unlinkSync(localFilePath); // Remove the locally saved temp file.

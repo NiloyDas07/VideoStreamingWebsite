@@ -116,6 +116,7 @@ const router = createBrowserRouter([
         ),
       },
 
+      // Channel Routes
       {
         path: "channel/:channelName/",
         element: <Channel />,
