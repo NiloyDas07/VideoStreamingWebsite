@@ -62,7 +62,7 @@ app.use("/api/v1/playlist", playlistRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 
 // error handler
-import { errorHandler } from "./middlewares/errorhandler.middleware.js";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 app.use(errorHandler);
 
