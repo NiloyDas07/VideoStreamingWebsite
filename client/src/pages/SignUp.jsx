@@ -49,7 +49,8 @@ const SignUp = () => {
       const blob = await response.blob();
       formData.append("coverImage", blob, "default-cover-image.png");
     }
-    formData.append("coverImage", coverImageRef.current.files[0]);
+
+    console.log("formData", formData);
 
     const resultAction = await dispatch(createAccount(formData));
 
