@@ -36,7 +36,6 @@ const generateAccessAndRefreshTokens = async (user) => {
 
 // Register a new user account
 const registerUser = asyncHandler(async (req, res) => {
-  console.log("Entered: ", req.body);
   // Get user data from frontend.
   const { username, email, password, fullName } = req.body;
 

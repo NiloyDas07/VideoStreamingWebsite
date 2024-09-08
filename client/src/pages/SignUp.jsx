@@ -50,8 +50,6 @@ const SignUp = () => {
       formData.append("coverImage", blob, "default-cover-image.png");
     }
 
-    console.log("formData", formData);
-
     const resultAction = await dispatch(createAccount(formData));
 
     if (createAccount.fulfilled.match(resultAction)) {
