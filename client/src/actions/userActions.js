@@ -51,7 +51,9 @@ export const createAccount = createAsyncThunk(
   "auth/createAccount",
   async (data, { rejectWithValue }) => {
     try {
+      console.log("data", data);
       const res = await axiosInstance.post("/users/register", data);
+      console.log(res);
       if (res.success === false) return rejectWithValue(res);
       return res?.data?.data;
     } catch (error) {
