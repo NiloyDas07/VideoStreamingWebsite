@@ -17,8 +17,10 @@ const Logo = ({ className, ...props }) => {
 
   return (
     <Link to="/" onClick={handleClick}>
-      <h1 className={`text-3xl font-bold ${className}`}>
-        Logo
+      <h1
+        className={`text-3xl font-bold ${className} bg-gradient-to-r from-white to-accent bg-clip-text text-transparent`}
+      >
+        VIDS
         <span className="sr-only">Go to homepage</span>
       </h1>
     </Link>
