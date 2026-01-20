@@ -13,7 +13,6 @@ export const createPlaylist = createAsyncThunk(
       return rejectWithValue(res?.response?.data);
     }
 
-    console.log(res.data);
     return res.data?.data;
   },
 );

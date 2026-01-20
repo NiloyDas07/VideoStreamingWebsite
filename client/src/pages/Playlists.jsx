@@ -13,7 +13,7 @@ const Playlists = () => {
       try {
         dispatch(getUserPlaylists({ userId: user._id }));
       } catch (error) {
-        console.log(error);
+        alert("Failed to fetch playlists! Please try again. If the problem persists, please contact support.");
       }
     };
 

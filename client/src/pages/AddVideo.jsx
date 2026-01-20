@@ -32,11 +32,10 @@ const AddVideo = () => {
 
     if (addNewVideo.fulfilled.match(response)) {
       // Redirect to the video page if the video is added successfully
-      console.log(response.payload);
       navigate(`/video/${response.payload?.data?._id}`);
     } else {
       // Handle the error if needed
-      console.error(response.payload);
+      alert("Failed to add video! Please try again. If the problem persists, please contact support.");
     }
   };
 

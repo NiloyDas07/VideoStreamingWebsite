@@ -15,7 +15,7 @@ const ShareButton = ({ size = "xl", className }) => {
       // Reset copied state after 0.6 seconds
       setTimeout(() => setCopied(false), 600);
     } catch (err) {
-      console.error("Failed to copy!", err);
+      alert("Failed to copy! Please try again. If the problem persists, please contact support.");
     }
   };
 

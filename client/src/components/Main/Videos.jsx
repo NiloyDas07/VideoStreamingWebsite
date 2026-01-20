@@ -52,7 +52,7 @@ const Videos = ({ forPage }) => {
           );
         }
       } catch (error) {
-        console.log(error);
+        alert("Failed to fetch videos! Please try again. If the problem persists, please contact support.");
       }
     };
     fetchVideos();

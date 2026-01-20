@@ -22,7 +22,6 @@ const ChannelHome = () => {
   const isChannelOwner = user?.username === channelName;
 
   const getChannelData = async () => {
-    console.log("Channel: ", channelName);
     await dispatch(getChannelByUsername(channelName));
   };
 

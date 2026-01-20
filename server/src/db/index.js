@@ -12,7 +12,6 @@ const connectDB = async (retries = 5, waitTime = 5000) => {
         maxPoolSize: 50, // Optional: Max connections in the pool
       }
     );
-    // console.log(`MongoDB Connected: ${connectionInstance.connection.host}`);
   } catch (error) {
     console.error("MongoDB connection FAILED: ", error.message);
 

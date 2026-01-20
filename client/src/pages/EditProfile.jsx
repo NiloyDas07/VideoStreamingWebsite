@@ -38,8 +38,7 @@ const EditProfile = () => {
           navigate("/");
         }
       } catch (error) {
-        console.log(error);
-        alert("Failed to delete account.");
+        alert("Failed to delete account! Please try again. If the problem persists, please contact support.");
       }
     }
   };

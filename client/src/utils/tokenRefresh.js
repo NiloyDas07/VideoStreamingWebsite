@@ -19,7 +19,6 @@ export const handleRequestWithTokenRefresh = async (
   } catch (error) {
     if (error.response.status === 401) {
       try {
-        console.log("Inside handleRequestWithTokenRefresh try block");
         await refreshAccessToken();
         const res = await originalRequest();
         return res;

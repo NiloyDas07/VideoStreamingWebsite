@@ -55,7 +55,6 @@ const VideoPlayer = ({ className, ...props }) => {
             newTotalTimeInSeconds >= 30
           ) {
             const res = incrementViewCount(videoId);
-            console.log(res);
             setViewIncreased(true);
             removeEventListeners();
           }

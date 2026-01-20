@@ -40,7 +40,7 @@ const AddToPlaylistButton = ({ size = "xl", className }) => {
       try {
         await dispatch(getUserPlaylists({ userId: user._id }));
       } catch (error) {
-        console.error("Failed to get user's playlists", error);
+        alert("Failed to get playlists! Please try again. If the problem persists, please contact support.");
       }
     }
   };
@@ -48,24 +48,22 @@ const AddToPlaylistButton = ({ size = "xl", className }) => {
   const handleTogglePlaylistSelection = async (checkBox, playlistId) => {
     if (checkBox.checked) {
       try {
-        const response = await dispatch(
+        await dispatch(
           addVideoToPlaylist({ videoId: video._id, playlistId }),
         );
-        console.log(response);
       } catch (error) {
-        console.error("Failed to add video to playlist", error);
+        alert("Failed to add video to playlist! Please try again. If the problem persists, please contact support.");
       }
     } else {
       try {
-        const response = await dispatch(
+        await dispatch(
           removeVideoFromPlaylist({
             videoId: video?._id,
             playlistId: playlistId,
           }),
         );
-        console.log(response);
       } catch (error) {
-        console.error("Failed to remove video from playlist", error);
+        alert("Failed to remove video from playlist! Please try again. If the problem persists, please contact support.");
       }
     }
 

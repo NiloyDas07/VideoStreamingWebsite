@@ -15,7 +15,6 @@ export const getChannelByUsername = createAsyncThunk(
       response?.error ||
       response.success === false
     ) {
-      console.log("Channel Error:", response.response?.data);
       return rejectWithValue(response.response?.data);
     }
 

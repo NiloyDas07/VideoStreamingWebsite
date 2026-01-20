@@ -21,7 +21,7 @@ const Playlist = () => {
       try {
         await dispatch(getPlaylistById({ playlistId: id }));
       } catch (error) {
-        console.log(error);
+        alert("Failed to fetch playlist! Please try again. If the problem persists, please contact support.");
       }
     };
 
@@ -39,8 +39,7 @@ const Playlist = () => {
       await dispatch(deletePlaylist({ playlistId: id }));
       navigate("/playlists");
     } catch (error) {
-      alert("Failed to delete playlist");
-      console.log(error);
+      alert("Failed to delete playlist! Please try again. If the problem persists, please contact support.");
     }
   };
 

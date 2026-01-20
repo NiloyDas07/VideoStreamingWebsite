@@ -15,8 +15,6 @@ const CoverImage = ({ imageUrl }) => {
       const formData = new FormData();
       formData.append("coverImage", coverImageRef.current.files[0]);
 
-      console.log("formData");
-
       dispatch(updateUserCoverImage(formData)).then(() => {
         window.location.reload();
       });

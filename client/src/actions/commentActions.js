@@ -20,7 +20,6 @@ export const addNewComment = createAsyncThunk(
       const response = await axiosInstance.post(`/comments/${videoId}`, {
         content,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

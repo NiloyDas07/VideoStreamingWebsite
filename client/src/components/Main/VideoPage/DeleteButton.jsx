@@ -18,18 +18,18 @@ const DeleteButton = () => {
       try {
         const response = await dispatch(deleteVideo({ videoId: video._id }));
 
-        console.log(response);
-
         if (deleteVideo.fulfilled.match(response)) {
           alert("Video deleted successfully");
           navigate("/");
           return;
         }
 
-        alert("Failed to delete video");
+        alert("Failed to delete video! Please try again. If the problem persists, please contact support.");
 
         navigate("/");
-      } catch (error) {}
+      } catch (error) {
+        alert("Failed to delete video! Please try again. If the problem persists, please contact support.");
+      }
     }
   };
 

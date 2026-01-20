@@ -15,7 +15,6 @@ function AuthLayout({ children, authentication = true }) {
   useEffect(() => {
     {
       setLoader(true);
-      // console.log(loader);
 
       if (!appLoading && !loading) {
         if (authentication && authStatus !== authentication) {

@@ -23,7 +23,6 @@ const DemoLogin = () => {
         );
 
         if (login.fulfilled.match(response)) {
-          console.log(`Login successful`);
           navigate("/");
         } else {
           alert(`Failed to login: ${response?.error?.message}`);

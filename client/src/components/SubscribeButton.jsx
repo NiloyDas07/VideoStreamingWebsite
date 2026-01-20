@@ -40,7 +40,7 @@ const SubscribeButton = ({ channelId, onClick, className, ...props }) => {
       if (error.response && error.response.status === 403) {
         alert("Can't subscribe to your own channel");
       } else {
-        console.error("Subscription failed: ", error);
+        alert("Subscription failed, Please try again later. If the problem persists, contact support.");
       }
     }
   }
@@ -58,7 +58,6 @@ const SubscribeButton = ({ channelId, onClick, className, ...props }) => {
 
           setSubscribed(response.data?.data ? true : false);
         } catch (error) {
-          console.error("Failed to check subscription status: ", error);
           setSubscribed(false);
         }
       } else {

@@ -24,7 +24,6 @@ const LikeButton = ({ contentId, contentType, size = "xl" }) => {
 
       setLikeCount(response.data?.data);
     } catch (error) {
-      // console.log(error);
     }
   };
 
@@ -50,7 +49,6 @@ const LikeButton = ({ contentId, contentType, size = "xl" }) => {
       fetchLikeCount();
     } catch (error) {
       setLiked((prevState) => !prevState);
-      console.log(error);
     }
   };
 
@@ -76,7 +74,6 @@ const LikeButton = ({ contentId, contentType, size = "xl" }) => {
         }
       } catch (error) {
         setLiked(false);
-        console.log(error);
       }
     };
 

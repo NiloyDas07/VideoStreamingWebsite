@@ -15,8 +15,6 @@ const AvatarImage = ({ imageUrl, height = "h-32", width = "w-32" }) => {
       const formData = new FormData();
       formData.append("avatar", avatarRef.current.files[0]);
 
-      console.log("formData");
-
       dispatch(updateUserAvatar(formData)).then(() => {
         window.location.reload();
       });

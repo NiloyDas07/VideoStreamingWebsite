@@ -22,7 +22,7 @@ const Video = () => {
           }
         }
       } catch (error) {
-        console.log(error);
+        alert("Video not found");
       }
     };
 
@@ -31,7 +31,7 @@ const Video = () => {
 
   return (
     <div className="p-4">
-      {1 === 1 ? (
+      {video ? (
         <>
           <div>
             <VideoPlayer />
@@ -42,7 +42,7 @@ const Video = () => {
           <CommentSection />
         </>
       ) : (
-        <div>No video found</div>
+        <div>Video not found</div>
       )}
     </div>
   );

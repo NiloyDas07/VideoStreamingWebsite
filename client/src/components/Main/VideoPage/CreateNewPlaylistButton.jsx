@@ -47,7 +47,7 @@ const CreateNewPlaylistButton = ({ handleCloseModal }) => {
       setOpen(false);
       handleCloseModal();
     } catch (error) {
-      console.error("Failed to create playlist", error);
+      alert("Failed to create playlist! Please try again. If the problem persists, please contact support.");
     }
   };
 

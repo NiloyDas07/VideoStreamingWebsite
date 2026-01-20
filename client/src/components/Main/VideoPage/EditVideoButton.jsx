@@ -31,20 +31,17 @@ const EditVideoButton = () => {
       formData.append("description", descriptionRef.current.value);
       formData.append("thumbnail", thumbnailRef.current.files[0]);
 
-      console.log("formData", formData, video?._id);
-
       const response = await dispatch(
         updateVideo({ videoId: video?._id, data: formData }),
       );
 
       if (updateVideo.fulfilled.match(response)) {
-        console.log(response);
         alert("Video updated successfully");
       } else {
-        console.error("Failed to update video: ", response);
+        alert("Failed to update video! Please try again. If the problem persists, please contact support.");
       }
     } catch (error) {
-      console.error(error);
+      alert("Failed to update video! Please try again. If the problem persists, please contact support.");
     }
   };
 

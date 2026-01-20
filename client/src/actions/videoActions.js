@@ -92,12 +92,9 @@ export const getVideoById = createAsyncThunk(
 export const deleteVideo = createAsyncThunk(
   "videos/delete",
   async ({ videoId }, { rejectWithValue }) => {
-    console.log("Entered delete", videoId);
     const response = await handleRequestWithTokenRefresh(
       async () => await axiosInstance.delete(`/videos/${videoId}`),
     );
-
-    console.log(response);
 
     if (
       response instanceof Error ||
@@ -129,7 +126,6 @@ export const updateVideo = createAsyncThunk(
       response?.error ||
       response.success === false
     ) {
-      console.error("Error: ", response);
       return rejectWithValue(response.response?.data);
     }
 

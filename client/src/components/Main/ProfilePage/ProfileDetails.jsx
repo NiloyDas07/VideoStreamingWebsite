@@ -16,7 +16,7 @@ const ProfileDetails = () => {
     getUserSubscriberCount()
       .then((res) => setSubscriberCount(res?.count || 0))
       .catch((error) => {
-        console.log(error);
+        alert("Failed to fetch subscriber count! Please try reloading the page. If the problem persists, please contact support.");
       });
   }, [dispatch, user]);
 

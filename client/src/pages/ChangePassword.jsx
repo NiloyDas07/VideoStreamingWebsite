@@ -30,11 +30,10 @@ const ChangePassword = () => {
           alert("Old password is incorrect");
           return;
         }
-        alert("Failed to change password");
+        alert("Failed to change password! Please try again. If the problem persists, please contact support.");
       }
     } catch (error) {
-      console.log(error);
-      alert("Failed to change password");
+      alert("Failed to change password! Please try again. If the problem persists, please contact support.");
     }
   };
 
